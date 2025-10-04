@@ -142,7 +142,7 @@ localStorage.removeItem('draft_city')
           type="text"
           placeholder="City"
           value={city}
-          onChange={(e) => setCity(e.target.value)}
+          onChange={(e) => { setCity(e.target.value); setDirty(true); }
           className="w-full p-2 rounded bg-[#0a0f1a] border border-[#1b2333]"
         />
 
