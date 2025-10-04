@@ -17,14 +17,12 @@ export default function SignInPage() {
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` }
     })
 
     setLoading(false)
     if (error) setErr(error.message)
-    else setMsg('Magic link sent! Check your inbox.')
+    else setMsg('Magic link sent. Check your inbox.')
   }
 
   return (
@@ -47,7 +45,6 @@ export default function SignInPage() {
           {loading ? 'Sending…' : 'Send magic link'}
         </button>
       </form>
-
       {msg && <p style={{color:'#8be28e', marginTop:10}}>{msg}</p>}
       {err && <p style={{color:'#ff6b6b', marginTop:10}}>{err}</p>}
     </main>
