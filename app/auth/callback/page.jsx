@@ -9,29 +9,25 @@ export default function AuthCallback() {
   useEffect(() => {
     const run = async () => {
       try {
-        // A) implicit hash flow: #access_token & #refresh_token
+        // A) implicit hash flow
         const hash = window.location.hash || ''
         if (hash.includes('access_token=')) {
           const p = new URLSearchParams(hash.slice(1))
           const access_token = p.get('access_token')
           const refresh_token = p.get('refresh_token')
           if (access_token && refresh_token) {
-            const { error } = await supabase.auth.setSession({ access_token, refresh_token })
-            if (error) console.error('setSession error:', error.message)
+            await supabase.auth.setSession({ access_token, refresh_token })
           }
           window.history.replaceState({}, '', window.location.pathname)
         }
 
-        // B) PKCE / code flow: ?code=...
+        // B) PKCE / code flow
         const url = new URL(window.location.href)
         const code = url.searchParams.get('code')
         if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(window.location.href)
-          if (error) console.error('exchangeCodeForSession error:', error.message)
+          await supabase.auth.exchangeCodeForSession(window.location.href)
           window.history.replaceState({}, '', window.location.pathname)
         }
-      } catch (e) {
-        console.error('Auth callback unexpected error:', e)
       } finally {
         router.replace('/dashboard')
       }
