@@ -36,12 +36,47 @@ export default async function Page({ params }) {
 
       <div style={{height:12}}/>
 
-      <section style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-        <div style={card}><h3>About</h3><p style={{opacity:.9}}>{data.about}</p>
-          <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>{areas.map((a,i)=>(<span key={i} style={badge}>{a}</span>))}</div></div>
-        <div style={card}><h3>Prices</h3>
-          <div>{prices.length?prices.map((p,i)=>(<div key={i} style={{marginBottom:6}}><span style={badge}>from</span> {p}</div>)):<p style={{opacity:.7}}>Ask for a free quote</p>}</div></div>
-      </section>
+     {/* Separate About + Areas cards */}
+<section style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:12}}>
+  {/* About card */}
+  <div style={card}>
+    <h3>About</h3>
+    <p style={{opacity:.9}}>{data.about}</p>
+  </div>
+
+  {/* Areas card */}
+  <div style={card}>
+    <h3>Areas Covered</h3>
+    {areas.length ? (
+      <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
+        {areas.map((a,i)=>(
+          <span key={i} style={badge}>{a}</span>
+        ))}
+      </div>
+    ) : (
+      <p style={{opacity:.7}}>Add your areas</p>
+    )}
+  </div>
+</section>
+
+{/* Keep prices section below, unchanged */}
+<section style={{marginTop:12}}>
+  <div style={card}>
+    <h3>Prices</h3>
+    <div>
+      {prices.length ? (
+        prices.map((p,i)=>(
+          <div key={i} style={{marginBottom:6}}>
+            <span style={badge}>from</span> {p}
+          </div>
+        ))
+      ) : (
+        <p style={{opacity:.7}}>Add your prices</p>
+      )}
+    </div>
+  </div>
+</section>
+
 
       <div style={{height:12}}/>
 
