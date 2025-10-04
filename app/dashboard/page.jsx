@@ -49,10 +49,11 @@ export default function Dashboard() {
     }
 
     // restore previous drafts
-    setSlug(saved.slug)
-    setName(saved.name)
-    setTrade(saved.trade)
-    setCity(saved.city)
+    setSlug(prev => prev || saved.slug)
+    setName(prev => prev || saved.name)
+    setTrade(prev => prev || saved.trade)
+    setCity(prev => prev || saved.city)
+
 
     // save every few seconds while typing
     const handleBeforeUnload = () => {
