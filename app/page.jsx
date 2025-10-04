@@ -1,3 +1,4 @@
+// Home page — single default export, no client code needed
 export default function Home() {
   return (
     <main style={{ maxWidth: 720, margin: '80px auto', padding: 16 }}>
