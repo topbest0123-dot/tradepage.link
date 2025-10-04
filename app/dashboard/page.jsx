@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/supabaseClient'
+import { useEffect } from 'react'
 
 export default function Dashboard() {
   const router = useRouter()
@@ -12,6 +13,7 @@ export default function Dashboard() {
   const [city, setCity] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
 
   const handleCreate = async (e) => {
     e.preventDefault()
