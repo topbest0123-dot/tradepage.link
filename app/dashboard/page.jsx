@@ -1,4 +1,10 @@
-  // 🧠 Keep form data if tab is switched or refreshed
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/supabaseClient'
+
+// 🧠 Keep form data if tab is switched or refreshed
   useEffect(() => {
     const saved = {
       slug: localStorage.getItem('draft_slug') || '',
