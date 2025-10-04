@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 
 // 🧠 Keep form data if tab is switched or refreshed
 // 1) RESTORE ONCE (only when the component mounts)
@@ -35,7 +35,7 @@ useEffect(() => {
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/supabaseClient'
+import { supabase } from '@/lib/supabaseClient'
 import { useEffect } from 'react'
 
 export default function Dashboard() {
