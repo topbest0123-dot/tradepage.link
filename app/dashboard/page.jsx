@@ -13,6 +13,33 @@ export default function Dashboard() {
   const [city, setCity] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+    // 🧠 Keep form data if tab is switched or refreshed
+  useEffect(() => {
+    const saved = {
+      slug: localStorage.getItem('draft_slug') || '',
+      name: localStorage.getItem('draft_name') || '',
+      trade: localStorage.getItem('draft_trade') || '',
+      city: localStorage.getItem('draft_city') || '',
+    }
+
+    // restore previous drafts
+    setSlug(saved.slug)
+    setName(saved.name)
+    setTrade(saved.trade)
+    setCity(saved.city)
+
+    // save every few seconds while typing
+    const handleBeforeUnload = () => {
+      localStorage.setItem('draft_slug', slug)
+      localStorage.setItem('draft_name', name)
+      localStorage.setItem('draft_trade', trade)
+      localStorage.setItem('draft_city', city)
+    }
+
+    const interval = setInterval(handleBeforeUnload, 2000)
+    return () => clearInterval(interval)
+  }, [slug, name, trade, city])
+
 
 
   const handleCreate = async (e) => {
