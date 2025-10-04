@@ -46,6 +46,7 @@ export default function Dashboard() {
   const [city, setCity] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [dirty, setDirty] = useState(false);
     // 🧠 Keep form data if tab is switched or refreshed
   useEffect(() => {
     const saved = {
@@ -120,21 +121,21 @@ localStorage.removeItem('draft_city')
           type="text"
           placeholder="your public link (slug)"
           value={slug}
-          onChange={(e) => setSlug(e.target.value)}
+         onChange={(e) => { setSlug(e.target.value); setDirty(true); }}
           className="w-full p-2 rounded bg-[#0a0f1a] border border-[#1b2333]"
         />
         <input
           type="text"
           placeholder="Business/Name"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => { setName(e.target.value); setDirty(true); }}
           className="w-full p-2 rounded bg-[#0a0f1a] border border-[#1b2333]"
         />
         <input
           type="text"
           placeholder="Trade"
           value={trade}
-          onChange={(e) => setTrade(e.target.value)}
+          onChange={(e) => { setCity(e.target.value); setDirty(true); }}
           className="w-full p-2 rounded bg-[#0a0f1a] border border-[#1b2333]"
         />
         <input
