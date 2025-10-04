@@ -1,12 +1,28 @@
-export const metadata = { title: 'TradePage', description: 'Your business in a link' };
+import Script from 'next/script'           // ⬅️ add this at the top (after the metadata export)
+import AuthHandler from './AuthHandler'     // you already added this earlier
 
-import AuthHandler from './AuthHandler'   // ⬅️ NEW
+export const metadata = { title: 'TradePage', description: 'Your business in a link' };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body style={{fontFamily:'system-ui, -apple-system, Segoe UI, Roboto, Arial', padding:0, margin:0, background:'#0a0f14', color:'#eaf2ff'}}>
-        <AuthHandler />                    // ⬅️ NEW (runs on every page)
+        {/* ⬇️ This runs BEFORE the app hydrates. It ensures the hash goes to /auth/callback */}
+        <Script id="supabase-hash-redirect" strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+(function(){
+  try {
+    if (window.location.hash && window.location.hash.indexOf('access_token=') !== -1) {
+      // Send the whole hash to /auth/callback so our handler can set the session
+      window.location.replace('/auth/callback' + window.location.hash);
+    }
+  } catch (e) {
+    console.error('hash redirect error', e);
+  }
+})();
+`}} />
+        <AuthHandler />   {/* keep this too */}
         <div style={{maxWidth:900, margin:'0 auto', padding:16}}>
           <header style={{padding:'16px 0', borderBottom:'1px solid #213a6b'}}>
             <b>TradePage</b> <span style={{opacity:.7}}>— Your business in a link</span>
