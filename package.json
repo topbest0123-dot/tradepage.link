@@ -1,5 +1,5 @@
 {
-  "name": "tradepage",
+  "name": "tradepage-link",
   "private": true,
   "version": "0.1.0",
   "scripts": {
@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.44.4",
+    "@supabase/supabase-js": "^2.45.0",
     "next": "14.2.5",
     "react": "18.3.1",
     "react-dom": "18.3.1"
