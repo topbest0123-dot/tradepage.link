@@ -1,39 +1,260 @@
-{/* HEADER CARD */}
-<div className="rounded-2xl bg-gradient-to-b from-[#0e1625] to-[#0a0f1c] border border-[#1e293b] p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-  <div>
-    <div className="flex items-center mb-2">
-      <div className="w-8 h-8 rounded-full bg-[#63d3e0] flex items-center justify-center mr-3">
-        <span className="text-[#0a0f1c] font-bold text-lg">★</span>
-      </div>
-      <h1 className="text-2xl sm:text-3xl font-bold text-white">{profile.name}</h1>
-    </div>
-    <p className="text-sm text-gray-400">{profile.trade} • {profile.city}</p>
-  </div>
+'use client'
+import { useEffect, useMemo, useState } from 'react'
+import { useParams } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
 
-  <div className="flex flex-wrap gap-3 mt-4 sm:mt-0">
-    {profile.phone && (
-      <a
-        href={`tel:${profile.phone}`}
-        className="bg-[#63d3e0] hover:bg-[#5bcbd8] text-black font-semibold py-2 px-5 rounded-xl transition"
-      >
-        Call
-      </a>
-    )}
-    {profile.whatsapp && (
-      <a
-        href={`https://wa.me/${profile.whatsapp.replace(/\D/g, '')}`}
-        className="bg-[#1f2937] border border-[#2f3c4f] hover:bg-[#273549] text-white font-semibold py-2 px-5 rounded-xl transition"
-      >
-        WhatsApp
-      </a>
-    )}
-    {profile.email && (
-      <a
-        href={`mailto:${profile.email}`}
-        className="bg-[#1f2937] border border-[#2f3c4f] hover:bg-[#273549] text-white font-semibold py-2 px-5 rounded-xl transition"
-      >
-        Email
-      </a>
-    )}
-  </div>
-</div>
+export default function PublicPage(){
+  const { slug } = useParams()
+  const [p, setP] = useState(null)
+  const [notFound, setNotFound] = useState(false)
+
+  useEffect(() => {
+    const load = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('slug,name,trade,city,phone,whatsapp,areas,services,prices,hours')
+        .ilike('slug', slug)
+        .maybeSingle()
+      if (error) console.error(error)
+      if (!data) setNotFound(true); else setP(data)
+    }
+    load()
+  }, [slug])
+
+  const areas = useMemo(() =>
+    (p?.areas || '').split(',').map(s => s.trim()).filter(Boolean), [p]
+  )
+  const services = useMemo(() =>
+    (p?.services || '').split('\n').map(s => s.trim()).filter(Boolean), [p]
+  )
+  const priceLines = useMemo(() =>
+    (p?.prices || '').split('\n').map(s => s.trim()).filter(Boolean), [p]
+  )
+
+  if (notFound) return <div style={pageWrap}><p>This page doesn’t exist yet.</p></div>
+  if (!p) return <div style={pageWrap}><p>Loading…</p></div>
+
+  const callHref = p.phone ? `tel:${p.phone.replace(/\s+/g,'')}` : null
+  const waHref  = p.whatsapp ? `https://wa.me/${p.whatsapp.replace(/\D/g,'')}` : null
+  const mailHref = null; // no public email yet — keep hidden unless you add a field later
+
+  return (
+    <div style={pageWrap}>
+      {/* COMPACT HEADER CARD (like your 2nd screenshot) */}
+      <div style={headerCard}>
+        <div style={headerLeft}>
+          <div style={logoDot}>★</div>
+          <div>
+            <div style={headerName}>{p.name || p.slug}</div>
+            <div style={headerSub}>{[p.trade, p.city].filter(Boolean).join(' • ')}</div>
+          </div>
+        </div>
+
+        <div style={ctaRow}>
+          {callHref && <a href={callHref} style={{...btn, ...btnPrimary}}>Call</a>}
+          {waHref &&  <a href={waHref}  style={btn}>WhatsApp</a>}
+          {mailHref && <a href={mailHref} style={btn}>Email</a>}
+        </div>
+      </div>
+
+      {/* Title line below (matches screenshot hierarchy) */}
+      <h1 style={h1Title}>{p.name || p.slug}</h1>
+      <div style={titleSub}>{[p.trade, p.city].filter(Boolean).join(' • ')}</div>
+
+      {/* GRID */}
+      <div style={grid2}>
+        {/* About (with areas chips) */}
+        <Card title="About">
+          <p style={{marginTop:0,marginBottom:14}}>
+            {services[0]
+              ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
+              : 'Reliable, friendly and affordable. Free quotes, no hidden fees.'
+            }
+          </p>
+          {areas.length>0 && (
+            <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+              {areas.map((a,i)=> <span key={i} style={areaPill}>{a}</span>)}
+            </div>
+          )}
+        </Card>
+
+        {/* Prices */}
+        <Card title="Prices">
+          <ul style={listReset}>
+            {priceLines.length===0 && <li style={{opacity:.7}}>Please ask for a quote.</li>}
+            {priceLines.map((ln,i)=>(
+              <li key={i} style={{display:'flex',alignItems:'center',gap:10,marginBottom:8}}>
+                <span style={tag}>from</span>
+                <span>{ln}</span>
+              </li>
+            ))}
+          </ul>
+        </Card>
+
+        {/* Services */}
+        <Card title="Services">
+          <ul style={ulBullets}>
+            {services.length===0 && <li style={{opacity:.7}}>No services listed yet.</li>}
+            {services.map((s,i)=> <li key={i}>{s}</li>)}
+          </ul>
+        </Card>
+
+        {/* Hours + Contact */}
+        <Card>
+          <div style={{display:'grid',gap:16}}>
+            <div>
+              <h3 style={h3}>Hours</h3>
+              <div style={{opacity:.9}}>{p.hours || 'Mon–Sat 08:00–18:00'}</div>
+            </div>
+            <div>
+              <h3 style={h3}>Contact</h3>
+              <div style={{display:'grid',gap:4}}>
+                {p.phone && <a href={callHref} style={contactLink}>{p.phone}</a>}
+                {p.whatsapp && <a href={waHref} style={contactLink}>{p.whatsapp}</a>}
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Gallery (placeholders like the mock) */}
+        <Card title="Gallery" wide>
+          <div style={galleryGrid}>
+            <div style={galleryItem}><div style={imgPlaceholder}>work photo</div></div>
+            <div style={galleryItem}><div style={imgPlaceholder}>work photo</div></div>
+            <div style={galleryItem}>
+              <img
+                src="https://images.unsplash.com/photo-1581091870673-1e7e1c1a5b1d?q=80&w=1200&auto=format&fit=crop"
+                alt="work"
+                style={{width:'100%',height:'100%',objectFit:'cover',borderRadius:14}}
+              />
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- Components ---------- */
+
+function Card({ title, wide=false, children }){
+  return (
+    <section style={{...card, gridColumn: wide ? '1 / -1' : 'auto'}}>
+      {title && <h2 style={h2}>{title}</h2>}
+      {children}
+    </section>
+  )
+}
+
+/* ---------- Styles ---------- */
+
+const pageWrap = {
+  maxWidth: 980,
+  margin: '28px auto',
+  padding: '0 16px 48px',
+  color: '#eaf2ff',
+  background: 'transparent'
+}
+
+/* Header card styles */
+const headerCard = {
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'space-between',
+  gap:16,
+  padding:'16px 18px',
+  borderRadius:16,
+  border:'1px solid #183153',
+  background:'linear-gradient(180deg,#0f213a,#0b1524)',
+  marginBottom:16
+}
+
+const headerLeft = { display:'flex', alignItems:'center', gap:12 }
+
+const logoDot = {
+  width:48, height:48, borderRadius:14,
+  display:'flex', alignItems:'center', justifyContent:'center',
+  background:'#63d3e0', color:'#0a0f1c',
+  fontWeight:800, fontSize:20
+}
+
+const headerName = { fontWeight:800, fontSize:22, lineHeight:'24px' }
+const headerSub  = { opacity:.75, fontSize:14, marginTop:4 }
+
+const ctaRow = { display:'flex', gap:10, flexWrap:'wrap' }
+
+const btn = {
+  padding:'10px 16px',
+  borderRadius:12,
+  border:'1px solid #2f3c4f',
+  background:'#1f2937',
+  color:'#ffffff',
+  textDecoration:'none',
+  fontWeight:700
+}
+const btnPrimary = {
+  background:'linear-gradient(135deg,#66e0b9,#8ab4ff)',
+  color:'#08101e',
+  border:'1px solid #2d4e82'
+}
+
+/* Title below header */
+const h1Title = { margin:'10px 0 6px 0', fontSize:48, lineHeight:1.05, fontWeight:800 }
+const titleSub = { opacity:.7, marginBottom:12, fontSize:20 }
+
+/* Cards / grid */
+const h2 = { margin:'0 0 10px 0', fontSize:18 }
+const h3 = { margin:'0 0 8px 0', fontSize:16 }
+
+const card = {
+  padding:16,
+  borderRadius:16,
+  border:'1px solid #183153',
+  background:'linear-gradient(180deg,#0f213a,#0b1524)'
+}
+
+const grid2 = {
+  display:'grid',
+  gridTemplateColumns:'1fr 1fr',
+  gap:16,
+  marginTop:16
+}
+
+const areaPill = {
+  padding:'6px 10px',
+  borderRadius:999,
+  border:'1px solid #27406e',
+  background:'#0c1a2e',
+  fontSize:13
+}
+
+const tag = {
+  fontSize:12,
+  padding:'2px 8px',
+  borderRadius:999,
+  border:'1px solid #27406e',
+  background:'#0c1a2e',
+  color:'#b8ccff'
+}
+
+const ulBullets = { margin:0, paddingLeft:20, display:'grid', gap:6 }
+const listReset = { margin:0, padding:0, listStyle:'none' }
+const contactLink = { color:'#b8ccff', textDecoration:'none' }
+
+/* Gallery */
+const galleryGrid = {
+  display:'grid',
+  gridTemplateColumns:'1fr 1fr 1fr',
+  gap:16
+}
+const galleryItem = {
+  height:220,
+  borderRadius:14,
+  border:'1px solid #27406e',
+  background:'#0b1627',
+  overflow:'hidden'
+}
+const imgPlaceholder = {
+  width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center',
+  opacity:.75
+}
