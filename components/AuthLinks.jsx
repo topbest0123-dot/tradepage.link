@@ -35,7 +35,7 @@ export default function AuthLinks() {
   };
 
  return (
-  <nav style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+  <nav className="hdr-nav" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
     {!session ? (
       <>
         {pathname !== '/signin' && (
@@ -71,4 +71,12 @@ export default function AuthLinks() {
       </>
     )}
   </nav>
+   <style jsx>{`
+  .hdr-nav a { color: #fff !important; }
+  .hdr-nav a:visited,
+  .hdr-nav a:hover,
+  .hdr-nav a:active,
+  .hdr-nav a:focus-visible { color: #fff !important; }
+`}</style>
+
 );
