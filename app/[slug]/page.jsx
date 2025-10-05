@@ -104,11 +104,17 @@ export default function PublicPage(){
 
         {/* Services */}
         <Card title="Services">
-          <ul style={ulBullets}>
-            {services.length===0 && <li style={{opacity:.7}}>No services listed yet.</li>}
-            {services.map((s,i)=> <li key={i}>{s}</li>)}
-          </ul>
-        </Card>
+  {services.length > 0 ? (
+    <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+      {services.map((s, i) => (
+        <span key={i} style={areaPill}>{s}</span>
+      ))}
+    </div>
+  ) : (
+    <div style={{opacity:.7}}>No services listed yet.</div>
+  )}
+</Card>
+
 
         {/* Hours */}
         <Card title="Hours">
