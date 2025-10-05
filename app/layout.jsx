@@ -39,6 +39,17 @@ export default function RootLayout({ children }) {
 
           <main style={{ paddingTop: 16 }}>{children}</main>
         </div>
+        <style jsx global>{`
+  header a,
+  header a:link,
+  header a:visited,
+  header a:hover,
+  header a:active,
+  header a:focus-visible {
+    color: #fff !important;
+  }
+`}</style>
+
       </body>
     </html>
   );
