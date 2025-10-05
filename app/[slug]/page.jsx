@@ -1,9 +1,8 @@
+'use client';
 /** 👇 Important: avoid build-time prerendering issues on Vercel */
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;           // (extra safety)
 export const fetchCache = 'force-no-store';
-'use client';
-
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
