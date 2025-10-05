@@ -28,6 +28,8 @@ export default function AuthCallback() {
           await supabase.auth.exchangeCodeForSession(window.location.href)
           window.history.replaceState({}, '', window.location.pathname)
         }
+      } catch (e) {
+        console.error('Auth callback error', e)
       } finally {
         router.replace('/dashboard')
       }
