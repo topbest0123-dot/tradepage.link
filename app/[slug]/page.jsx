@@ -111,15 +111,28 @@ export default function PublicPage(){
         {/* Services */}
         <Card title="Services">
   {services.length > 0 ? (
-    <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
       {services.map((s, i) => (
-        <span key={i} style={areaPill}>{s}</span>
+        <span
+          key={i}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '999px',
+            border: '1px solid #27406e',
+            background: '#0c1a2e',
+            color: '#d1e1ff',
+            fontSize: '13px',
+          }}
+        >
+          {s}
+        </span>
       ))}
     </div>
   ) : (
-    <div style={{opacity:.7}}>No services listed yet.</div>
+    <div style={{ opacity: 0.7 }}>No services listed yet.</div>
   )}
 </Card>
+
 
 
         {/* Hours */}
