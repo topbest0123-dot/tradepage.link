@@ -32,7 +32,11 @@ export default function RootLayout({ children }) {
               <b>TradePage</b>{' '}
               <span style={{ opacity: 0.7 }}>— Your business in a link</span>
             </div>
-            <nav />
+            <nav style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+  <Link href="/signin" style={{ textDecoration: 'underline' }}>Sign in</Link>
+  <Link href="/dashboard" style={{ textDecoration: 'underline' }}>Dashboard</Link>
+</nav>
+
           </header>
 
           <main style={{ paddingTop: 16 }}>{children}</main>
