@@ -24,13 +24,29 @@ export default function PublicPage(){
   const areas = useMemo(() =>
     (p?.areas || '').split(',').map(s => s.trim()).filter(Boolean), [p]
   )
- const services = useMemo(() => {
-  if (!p?.services) return [];
-  return p.services
-    .split(/[,\n]+/) // ✅ split by comma or newline
-    .map(s => s.trim())
-    .filter(Boolean);
-}, [p]);
+<Card title="Services">
+  {services.length > 0 ? (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      {services.map((s, i) => (
+        <span
+          key={i}
+          style={{
+            padding: '6px 12px',
+            borderRadius: 999,
+            border: '1px solid #27406e',
+            background: '#0c1a2e',
+            color: '#d1e1ff',
+            fontSize: 13,
+          }}
+        >
+          {s}
+        </span>
+      ))}
+    </div>
+  ) : (
+    <div style={{ opacity: 0.7 }}>No services listed yet.</div>
+  )}
+</Card>
 
   )
   const priceLines = useMemo(() =>
