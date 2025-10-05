@@ -9,10 +9,10 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;           // (extra safety)
 export const fetchCache = 'force-no-store';
 
-/** Small helper: turn a string into a clean list */
+/** Small helper: turn any value into a clean list of strings */
 const toList = (value) =>
-  (value || '')
-    .split(/[,\n]+/)          // commas OR new lines
+  String(value ?? '')                  // ← safe coerce (handles numbers/null/undefined)
+    .split(/[,\n]+/)                   // commas OR new lines
     .map((s) => s.trim())
     .filter(Boolean);
 
@@ -41,7 +41,7 @@ export default function PublicPage() {
   const services = useMemo(() => toList(p?.services), [p]);
   const priceLines = useMemo(
     () =>
-      (p?.prices || '')
+      String(p?.prices ?? '')          // ← safe coerce (handles numbers/null/undefined)
         .split(/\r?\n/)
         .map((s) => s.trim())
         .filter(Boolean),
