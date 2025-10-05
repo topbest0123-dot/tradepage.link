@@ -24,15 +24,3 @@ export default function RootLayout({ children }) {
               <b>TradePage</b> <span style={{opacity:.7}}>— Your business in a link</span>
             </div>
             <nav style={{display:'flex', alignItems:'center', gap:12}}>
-              <a href="/" style={{color:'#b8ccff', textDecoration:'none'}}>Home</a>
-              {/* Auth-aware links */}
-              <NavAuth />
-            </nav>
-          </header>
-          <main style={{padding:'16px 0'}}>{children}</main>
-          <footer style={{padding:'24px 0', borderTop:'1px solid #213a6b', opacity:.7}}>© {new Date().getFullYear()} TradePage</footer>
-        </div>
-      </body>
-    </html>
-  )
-}
