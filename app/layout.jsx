@@ -1,7 +1,7 @@
 import Script from 'next/script'
 import NavAuth from '@/components/NavAuth'
 
-export const metadata = { title: 'TradePage', description: 'Your business in a link' };
+export const metadata = { title: 'TradePage Test', description: 'Your business in a link' };
 
 export default function RootLayout({ children }) {
   return (
