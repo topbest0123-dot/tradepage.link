@@ -23,7 +23,7 @@ export default function Home(){
 
   return (
     <section>
-      <h1>Welcome to TradePage Test Test</h1>
+      <h1>Welcome to TradePage</h1>
       <p>Create a simple public page with your name, trade, city, services, prices and tap-to-call/WhatsApp.</p>
       <ol>
         <li><a href="/signin">Sign in</a> with your email (magic link)</li>
