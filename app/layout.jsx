@@ -1,4 +1,4 @@
-'client'
+'use client'
 import Script from 'next/script'
 import NavAuth from '@/components/NavAuth'
 
