@@ -36,11 +36,10 @@ export default function PublicPage(){
 
   const callHref = p.phone ? `tel:${p.phone.replace(/\s+/g,'')}` : null
   const waHref  = p.whatsapp ? `https://wa.me/${p.whatsapp.replace(/\D/g,'')}` : null
-  const mailHref = null
 
   return (
     <div style={pageWrap}>
-      {/* HEADER CARD ONLY */}
+      {/* HEADER CARD */}
       <div style={headerCard}>
         <div style={headerLeft}>
           <div style={logoDot}>★</div>
@@ -53,7 +52,6 @@ export default function PublicPage(){
         <div style={ctaRow}>
           {callHref && <a href={callHref} style={{...btn, ...btnPrimary}}>Call</a>}
           {waHref &&  <a href={waHref}  style={btn}>WhatsApp</a>}
-          {mailHref && <a href={mailHref} style={btn}>Email</a>}
         </div>
       </div>
 
@@ -92,20 +90,8 @@ export default function PublicPage(){
           </ul>
         </Card>
 
-        <Card>
-          <div style={{display:'grid',gap:16}}>
-            <div>
-              <h3 style={h3}>Hours</h3>
-              <div style={{opacity:.9}}>{p.hours || 'Mon–Sat 08:00–18:00'}</div>
-            </div>
-            <div>
-              <h3 style={h3}>Contact</h3>
-              <div style={{display:'grid',gap:4}}>
-                {p.phone && <a href={callHref} style={contactLink}>{p.phone}</a>}
-                {p.whatsapp && <a href={waHref} style={contactLink}>{p.whatsapp}</a>}
-              </div>
-            </div>
-          </div>
+        <Card title="Hours">
+          <div style={{opacity:.9}}>{p.hours || 'Mon–Sat 08:00–18:00'}</div>
         </Card>
 
         <Card title="Gallery" wide>
@@ -157,7 +143,6 @@ const btn = { padding:'10px 16px',borderRadius:12,border:'1px solid #2f3c4f',bac
 const btnPrimary = { background:'linear-gradient(135deg,#66e0b9,#8ab4ff)',color:'#08101e',border:'1px solid #2d4e82' }
 
 const h2 = { margin:'0 0 10px 0',fontSize:18 }
-const h3 = { margin:'0 0 8px 0',fontSize:16 }
 const card = { padding:16,borderRadius:16,border:'1px solid #183153',background:'linear-gradient(180deg,#0f213a,#0b1524)' }
 const grid2 = { display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginTop:16 }
 
@@ -165,7 +150,6 @@ const areaPill = { padding:'6px 10px',borderRadius:999,border:'1px solid #27406e
 const tag = { fontSize:12,padding:'2px 8px',borderRadius:999,border:'1px solid #27406e',background:'#0c1a2e',color:'#b8ccff' }
 const ulBullets = { margin:0,paddingLeft:20,display:'grid',gap:6 }
 const listReset = { margin:0,padding:0,listStyle:'none' }
-const contactLink = { color:'#b8ccff',textDecoration:'none' }
 
 const galleryGrid = { display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16 }
 const galleryItem = { height:220,borderRadius:14,border:'1px solid #27406e',background:'#0b1627',overflow:'hidden' }
