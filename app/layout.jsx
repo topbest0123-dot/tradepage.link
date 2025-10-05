@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import AuthLinks from '@/components/AuthLinks';
 
 export const metadata = {
@@ -33,23 +32,25 @@ export default function RootLayout({ children }) {
               <b>TradePage</b>{' '}
               <span style={{ opacity: 0.7 }}>— Your business in a link</span>
             </div>
-           <AuthLinks />
-
+            <AuthLinks />
           </header>
 
           <main style={{ paddingTop: 16 }}>{children}</main>
         </div>
-        <style jsx global>{`
-  header a,
-  header a:link,
-  header a:visited,
-  header a:hover,
-  header a:active,
-  header a:focus-visible {
-    color: #fff !important;
-  }
-`}</style>
 
+        {/* Keep header links white in every state (extra safety) */}
+        <style jsx global>{`
+          header a,
+          header a:any-link,
+          header a:-webkit-any-link,
+          header a:link,
+          header a:visited,
+          header a:hover,
+          header a:active,
+          header a:focus-visible {
+            color: #fff !important;
+          }
+        `}</style>
       </body>
     </html>
   );
