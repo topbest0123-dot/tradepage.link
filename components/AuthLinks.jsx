@@ -13,12 +13,10 @@ export default function AuthLinks() {
   useEffect(() => {
     let ignore = false;
 
-    // get current session once
     supabase.auth.getSession().then(({ data }) => {
       if (!ignore) setSession(data.session ?? null);
     });
 
-    // listen for changes
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       setSession(s ?? null);
     });
@@ -34,49 +32,19 @@ export default function AuthLinks() {
     router.push('/signin');
   };
 
- return (
-  <nav className="hdr-nav" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-    {!session ? (
-      <>
-        {pathname !== '/signin' && (
-          <Link
-            href="/signin"
-            style={{ textDecoration: 'underline', color: '#fff' }}
-          >
-            Sign in
-          </Link>
-        )}
-      </>
-    ) : (
-      <>
-        <Link
-          href="/dashboard"
-          style={{ textDecoration: 'underline', color: '#fff' }}
-        >
-          Dashboard
-        </Link>
-        <button
-          onClick={signOut}
-          style={{
-            background: 'transparent',
-            border: '1px solid #213a6b',
-            padding: '6px 10px',
-            borderRadius: 8,
-            cursor: 'pointer',
-            color: '#fff',
-          }}
-        >
-          Sign out
-        </button>
-      </>
-    )}
-  </nav>
-   <style jsx>{`
-  .hdr-nav a { color: #fff !important; }
-  .hdr-nav a:visited,
-  .hdr-nav a:hover,
-  .hdr-nav a:active,
-  .hdr-nav a:focus-visible { color: #fff !important; }
-`}</style>
-
-);
+  return (
+    <>
+      <nav className="hdr-nav" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        {!session ? (
+          pathname !== '/signin' && (
+            <Link href="/signin" className="hdr-link">
+              {/* Force the text to be white regardless of :visited */}
+              <span className="force-white">Sign in</span>
+            </Link>
+          )
+        ) : (
+          <>
+            <Link href="/dashboard" className="hdr-link">
+              {/* Force the text to be white regardless of :visited */}
+              <span className="force-white">Dashboard</span>
+            <
