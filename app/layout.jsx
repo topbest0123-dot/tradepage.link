@@ -1,25 +1,8 @@
-import Script from 'next/script';           // imports MUST be at the top
-import AuthHandler from './AuthHandler';
-
-export const metadata = { title: 'TradePage', description: 'Your business in a link' };
-
+export const metadata = { title: 'TradePage', description: 'Your business in a link' }
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body style={{fontFamily:'system-ui, -apple-system, Segoe UI, Roboto, Arial', padding:0, margin:0, background:'#0a0f14', color:'#eaf2ff'}}>
-        {/* Catch #access_token links BEFORE React hydrates */}
-        <Script id="supabase-hash-redirect" strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-(function(){
-  try {
-    if (window.location.hash && window.location.hash.indexOf('access_token=') !== -1) {
-      window.location.replace('/auth/callback' + window.location.hash);
-    }
-  } catch (e) { console.error('hash redirect error', e); }
-})();
-`}} />
-        <AuthHandler />
         <div style={{maxWidth:900, margin:'0 auto', padding:16}}>
           <header style={{padding:'16px 0', borderBottom:'1px solid #213a6b'}}>
             <b>TradePage</b> <span style={{opacity:.7}}>— Your business in a link</span>
@@ -34,5 +17,5 @@ export default function RootLayout({ children }) {
         </div>
       </body>
     </html>
-  );
+  )
 }
