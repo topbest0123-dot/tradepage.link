@@ -149,9 +149,7 @@ export default function Dashboard(){
                 background:'linear-gradient(135deg,#66e0b9,#8ab4ff)', color:'#08101e',
                 fontWeight:700, marginRight:12}}>
         Save
-      </button>
-      <button onClick={signOut} style={{padding:'10px 14px', borderRadius:12, border:'1px solid #27406e'}}>Sign out</button>
-
+     
       {msg && <p style={{marginTop:10}}>{msg}</p>}
     </section>
   )
