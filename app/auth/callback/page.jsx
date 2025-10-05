@@ -5,11 +5,9 @@ import { supabase } from '@/lib/supabaseClient'
 
 export default function AuthCallback() {
   const router = useRouter()
-
   useEffect(() => {
     const run = async () => {
       try {
-        // A) implicit hash flow
         const hash = window.location.hash || ''
         if (hash.includes('access_token=')) {
           const p = new URLSearchParams(hash.slice(1))
@@ -20,22 +18,17 @@ export default function AuthCallback() {
           }
           window.history.replaceState({}, '', window.location.pathname)
         }
-
-        // B) PKCE / code flow
         const url = new URL(window.location.href)
         const code = url.searchParams.get('code')
         if (code) {
           await supabase.auth.exchangeCodeForSession(window.location.href)
           window.history.replaceState({}, '', window.location.pathname)
         }
-      } catch (e) {
-        console.error('Auth callback error', e)
       } finally {
         router.replace('/dashboard')
       }
     }
     run()
   }, [router])
-
   return <main style={{ padding: 24 }}>Signing you in…</main>
 }
