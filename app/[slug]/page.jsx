@@ -58,16 +58,24 @@ export default function PublicPage(){
       {/* GRID */}
       <div style={grid2}>
         {/* About = text only */}
-        <Card title="About">
-          <p style={{marginTop:0,marginBottom:0}}>
-            {p.about && p.about.trim().length > 0
-              ? p.about
-              : (services[0]
-                  ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
-                  : 'Reliable, friendly and affordable. Free quotes, no hidden fees.')
-            }
-          </p>
-        </Card>
+       <Card title="About">
+  <p style={{
+    marginTop: 0,
+    marginBottom: 0,
+    whiteSpace: 'pre-wrap',     // ✅ preserves line breaks
+    wordWrap: 'break-word',     // ✅ wraps long words properly
+    overflowWrap: 'break-word', // ✅ ensures text stays inside box
+    lineHeight: 1.5,            // ✅ better readability
+  }}>
+    {p.about && p.about.trim().length > 0
+      ? p.about
+      : (services[0]
+          ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
+          : 'Reliable, friendly and affordable. Free quotes, no hidden fees.')
+    }
+  </p>
+</Card>
+
 
         {/* Prices */}
         <Card title="Prices">
