@@ -67,7 +67,10 @@ export default function Dashboard(){
       .replace(/-+/g, '-')
 
     if (!slug) { setMsg('Please choose a slug.'); return }
-
+    const normalizedServices = (form.services || '')
+  .replace(/\n+/g, ',')   // convert new lines → commas
+  .replace(/,+/g, ',')    // collapse multiple commas
+  .trim();
     const row = {
       id: user.id,
       slug,
@@ -78,7 +81,7 @@ export default function Dashboard(){
       whatsapp: form.whatsapp,
       about: form.about,     // NEW
       areas: form.areas,
-      services: form.services,
+      services: normalizedServices,
       prices: form.prices,
       hours: form.hours,
       updated_at: new Date().toISOString()
