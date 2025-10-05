@@ -145,7 +145,7 @@ function Card({ title, wide=false, children }){
 }
 
 /* ---------- Styles ---------- */
-const pageWrap = { maxWidth: 980, margin: '28px auto', padding: '0 16px 48px', color: '#eaf2ff' }
+const pageWrap = { maxWidth: 980, margin: '28px auto', padding: '0 16px 48px', color: '#eaf2ff', overflowX: 'hidden' }
 
 const headerCard = {
   display:'flex', alignItems:'center', justifyContent:'space-between', gap:16,
