@@ -58,23 +58,24 @@ export default function PublicPage(){
       {/* GRID */}
       <div style={grid2}>
         {/* About = text only */}
-       <Card title="About">
+<Card title="About">
   <p style={{
     marginTop: 0,
     marginBottom: 0,
-    whiteSpace: 'pre-wrap',     // ✅ preserves line breaks
-    wordWrap: 'break-word',     // ✅ wraps long words properly
-    overflowWrap: 'break-word', // ✅ ensures text stays inside box
-    lineHeight: 1.5,            // ✅ better readability
+    whiteSpace: 'pre-wrap',      // keep user line breaks
+    overflowWrap: 'anywhere',    // ✅ strongest: break anywhere if needed
+    wordBreak: 'break-word',     // fallback (older support)
+    lineHeight: 1.5,
+    maxWidth: '100%',            // don't exceed column width
   }}>
     {p.about && p.about.trim().length > 0
       ? p.about
       : (services[0]
           ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
-          : 'Reliable, friendly and affordable. Free quotes, no hidden fees.')
-    }
+          : 'Reliable, friendly and affordable. Free quotes, no hidden fees.')}
   </p>
 </Card>
+
 
 
         {/* Prices */}
@@ -164,7 +165,7 @@ const btn = { padding:'10px 16px',borderRadius:12,border:'1px solid #2f3c4f',bac
 const btnPrimary = { background:'linear-gradient(135deg,#66e0b9,#8ab4ff)',color:'#08101e',border:'1px solid #2d4e82' }
 
 const h2 = { margin:'0 0 10px 0',fontSize:18 }
-const card = { padding:16,borderRadius:16,border:'1px solid #183153',background:'linear-gradient(180deg,#0f213a,#0b1524)' }
+const card = { padding:16,borderRadius:16,border:'1px solid #183153',background:'linear-gradient(180deg,#0f213a,#0b1524),minWidth: 0' }
 const grid2 = { display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginTop:16 }
 
 const areaPill = { padding:'6px 10px',borderRadius:999,border:'1px solid #27406e',background:'#0c1a2e',fontSize:13 }
