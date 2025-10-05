@@ -10,11 +10,12 @@ export default function PublicPage(){
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('profiles')
-        .select('name, trade, city, phone, whatsapp, slug')
-        .ilike('slug', slug)  // case-insensitive
+        .select('slug,name,trade,city,phone,whatsapp,areas,services,prices,hours')
+        .ilike('slug', slug)  // case-insensitive slug match
         .maybeSingle()
+      if (error) console.error(error)
       if (!data) setNotFound(true); else setP(data)
     }
     load()
@@ -25,6 +26,8 @@ export default function PublicPage(){
 
   const callHref = p.phone ? `tel:${p.phone.replace(/\s+/g,'')}` : null
   const waHref = p.whatsapp ? `https://wa.me/${p.whatsapp.replace(/\D/g,'')}` : null
+  const areas = (p.areas || '').split(',').map(s => s.trim()).filter(Boolean)
+  const services = (p.services || '').split('\n').map(s => s.trim()).filter(Boolean)
 
   return (
     <section>
@@ -36,7 +39,35 @@ export default function PublicPage(){
         {waHref && <a href={waHref} style={btn}>WhatsApp</a>}
       </div>
 
-      <p style={{opacity:.75}}>Share this link: <code>/{p.slug}</code></p>
+      {areas.length > 0 && (
+        <div style={{marginBottom:16}}>
+          <b>Areas covered:</b> {areas.join(', ')}
+        </div>
+      )}
+
+      {services.length > 0 && (
+        <div style={{marginBottom:16}}>
+          <b>Services:</b>
+          <ul style={{marginTop:8}}>
+            {services.map((s,i) => <li key={i}>{s}</li>)}
+          </ul>
+        </div>
+      )}
+
+      {p.prices && (
+        <div style={{marginBottom:16}}>
+          <b>Prices:</b>
+          <pre style={pre}>{p.prices}</pre>
+        </div>
+      )}
+
+      {p.hours && (
+        <div style={{marginBottom:16}}>
+          <b>Hours:</b> {p.hours}
+        </div>
+      )}
+
+      <p style={{opacity:.6, marginTop:24}}>Share this link: <code>/{p.slug}</code></p>
     </section>
   )
 }
@@ -49,4 +80,13 @@ const btn = {
   color:'#08101e',
   fontWeight:700,
   textDecoration:'none'
+}
+
+const pre = {
+  whiteSpace:'pre-wrap',
+  background:'#0b1428',
+  border:'1px solid #27406e',
+  borderRadius:12,
+  padding:12,
+  marginTop:8
 }
