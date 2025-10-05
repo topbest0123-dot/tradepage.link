@@ -8,10 +8,19 @@ export default function Dashboard(){
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [msg, setMsg] = useState('')
+
   const [form, setForm] = useState({
-    slug: '', name: '', trade: '', city: '',
-    phone: '', whatsapp: '',
-    areas: '', services: '', prices: '', hours: ''
+    slug: '',
+    name: '',
+    trade: '',
+    city: '',
+    phone: '',
+    whatsapp: '',
+    about: '',     // NEW
+    areas: '',     // zones
+    services: '',
+    prices: '',
+    hours: ''
   })
 
   useEffect(() => {
@@ -19,13 +28,29 @@ export default function Dashboard(){
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.replace('/signin'); return }
       setUser(user)
-      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('slug,name,trade,city,phone,whatsapp,about,areas,services,prices,hours')
+        .eq('id', user.id)
+        .maybeSingle()
+
       if (error) console.error(error)
-      if (data) setForm({
-        slug: data.slug ?? '', name: data.name ?? '', trade: data.trade ?? '', city: data.city ?? '',
-        phone: data.phone ?? '', whatsapp: data.whatsapp ?? '',
-        areas: data.areas ?? '', services: data.services ?? '', prices: data.prices ?? '', hours: data.hours ?? ''
-      })
+      if (data) {
+        setForm({
+          slug: data.slug ?? '',
+          name: data.name ?? '',
+          trade: data.trade ?? '',
+          city: data.city ?? '',
+          phone: data.phone ?? '',
+          whatsapp: data.whatsapp ?? '',
+          about: data.about ?? '',
+          areas: data.areas ?? '',
+          services: data.services ?? '',
+          prices: data.prices ?? '',
+          hours: data.hours ?? ''
+        })
+      }
       setLoading(false)
     }
     load()
@@ -35,14 +60,30 @@ export default function Dashboard(){
 
   const save = async () => {
     setMsg('')
-    const slug = form.slug.trim().toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/-+/g,'-')
+    const slug = (form.slug || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\-]/g, '-')
+      .replace(/-+/g, '-')
+
     if (!slug) { setMsg('Please choose a slug.'); return }
+
     const row = {
       id: user.id,
-      ...form,
       slug,
+      name: form.name,
+      trade: form.trade,
+      city: form.city,
+      phone: form.phone,
+      whatsapp: form.whatsapp,
+      about: form.about,     // NEW
+      areas: form.areas,
+      services: form.services,
+      prices: form.prices,
+      hours: form.hours,
       updated_at: new Date().toISOString()
     }
+
     const { error } = await supabase.from('profiles').upsert(row, { onConflict: 'id' })
     setMsg(error ? error.message : 'Saved!')
   }
@@ -50,8 +91,6 @@ export default function Dashboard(){
   const signOut = async () => { await supabase.auth.signOut(); router.replace('/') }
 
   if (loading) return <p>Loading…</p>
-
-  const publicUrl = form.slug ? `https://www.tradepage.link/${form.slug.toLowerCase()}` : null
 
   const input = (label, name, placeholder='') => (
     <label style={{display:'block', marginBottom:12}}>
@@ -92,10 +131,15 @@ export default function Dashboard(){
       {input('Phone (tap to call)', 'phone', 'e.g. +44 7700 900123')}
       {input('WhatsApp number', 'whatsapp', 'e.g. +44 7700 900123')}
 
-      {textarea('Areas (comma separated)', 'areas', 'e.g. Camden, Islington, Hackney')}
+      {/* NEW: About */}
+      {textarea('About (short description for your public page)', 'about', 'e.g. Reliable, friendly and affordable. Free quotes, no hidden fees.')}
+
+      {/* Zones / Areas stays separate */}
+      {textarea('Zones / Areas (comma separated)', 'areas', 'e.g. Camden, Islington, Hackney')}
+
       {textarea('Services (one per line)', 'services', 'e.g.\nRegular clean\nDeep clean\nEnd of tenancy')}
-      {textarea('Prices (free text)', 'prices', 'e.g.\nRegular clean: £18/hr\nDeep clean: from £120')}
-      {textarea('Hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
+      {textarea('Prices (free text, one per line optional)', 'prices', 'e.g.\nRegular clean: £18/hr\nDeep clean: from £120')}
+      {textarea('Opening hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
       <button onClick={save}
         style={{padding:'10px 14px', borderRadius:12, border:'1px solid #27406e',
@@ -106,11 +150,6 @@ export default function Dashboard(){
       <button onClick={signOut} style={{padding:'10px 14px', borderRadius:12, border:'1px solid #27406e'}}>Sign out</button>
 
       {msg && <p style={{marginTop:10}}>{msg}</p>}
-      {publicUrl && (
-        <p style={{marginTop:14}}>
-          Public page: <a href={`/${form.slug.toLowerCase()}`} style={{color:'#b8ccff'}}>{publicUrl}</a>
-        </p>
-      )}
     </section>
   )
 }
