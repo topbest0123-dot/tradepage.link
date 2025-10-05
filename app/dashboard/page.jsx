@@ -7,47 +7,42 @@ export default function Dashboard(){
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
-  const [form, setForm] = useState({
-    slug: '',
-    name: '',
-    trade: '',
-    city: '',
-    phone: '',
-    whatsapp: ''
-  })
   const [msg, setMsg] = useState('')
+  const [form, setForm] = useState({
+    slug: '', name: '', trade: '', city: '',
+    phone: '', whatsapp: '',
+    areas: '', services: '', prices: '', hours: ''
+  })
 
   useEffect(() => {
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.replace('/signin'); return }
       setUser(user)
-      // fetch existing profile
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+      if (error) console.error(error)
       if (data) setForm({
-        slug: data.slug || '',
-        name: data.name || '',
-        trade: data.trade || '',
-        city: data.city || '',
-        phone: data.phone || '',
-        whatsapp: data.whatsapp || ''
+        slug: data.slug ?? '', name: data.name ?? '', trade: data.trade ?? '', city: data.city ?? '',
+        phone: data.phone ?? '', whatsapp: data.whatsapp ?? '',
+        areas: data.areas ?? '', services: data.services ?? '', prices: data.prices ?? '', hours: data.hours ?? ''
       })
       setLoading(false)
     }
     load()
   }, [router])
 
-  const onChange = (e) => {
-    const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
-  }
+  const onChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
 
   const save = async () => {
     setMsg('')
-    // minimal slug validation
     const slug = form.slug.trim().toLowerCase().replace(/[^a-z0-9\-]/g, '-').replace(/-+/g,'-')
     if (!slug) { setMsg('Please choose a slug.'); return }
-    const row = { id: user.id, ...form, slug, updated_at: new Date().toISOString() }
+    const row = {
+      id: user.id,
+      ...form,
+      slug,
+      updated_at: new Date().toISOString()
+    }
     const { error } = await supabase.from('profiles').upsert(row, { onConflict: 'id' })
     setMsg(error ? error.message : 'Saved!')
   }
@@ -71,6 +66,20 @@ export default function Dashboard(){
     </label>
   )
 
+  const textarea = (label, name, placeholder='') => (
+    <label style={{display:'block', marginBottom:12}}>
+      <div style={{opacity:.8, marginBottom:6}}>{label}</div>
+      <textarea
+        name={name}
+        value={form[name]}
+        onChange={onChange}
+        placeholder={placeholder}
+        rows={4}
+        style={{padding:12, width:'100%', maxWidth:520, borderRadius:12, border:'1px solid #27406e', background:'#0b1428', color:'#eaf2ff'}}
+      />
+    </label>
+  )
+
   return (
     <section>
       <h2>Dashboard</h2>
@@ -82,6 +91,11 @@ export default function Dashboard(){
       {input('City', 'city', 'e.g. London')}
       {input('Phone (tap to call)', 'phone', 'e.g. +44 7700 900123')}
       {input('WhatsApp number', 'whatsapp', 'e.g. +44 7700 900123')}
+
+      {textarea('Areas (comma separated)', 'areas', 'e.g. Camden, Islington, Hackney')}
+      {textarea('Services (one per line)', 'services', 'e.g.\nRegular clean\nDeep clean\nEnd of tenancy')}
+      {textarea('Prices (free text)', 'prices', 'e.g.\nRegular clean: £18/hr\nDeep clean: from £120')}
+      {textarea('Hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
       <button onClick={save}
         style={{padding:'10px 14px', borderRadius:12, border:'1px solid #27406e',
