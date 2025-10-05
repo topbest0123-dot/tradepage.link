@@ -150,8 +150,11 @@ export default function Dashboard(){
                 fontWeight:700, marginRight:12}}>
         Save
      
-      - (msg && <p style={{marginTop:10}}>{msg}</p>)
-+ {msg && (
-+   <p style={{ marginTop: 10 }}>{msg}</p>
-+ )}
+    {/* Flash / Save message */}
+{msg && (
+  <p style={{ marginTop: 10 }}>{msg}</p>
+)}
+</section>
+);
+}
 
