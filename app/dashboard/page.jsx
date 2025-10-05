@@ -222,7 +222,7 @@ export default function Dashboard() {
 </button>
 
 {/* Flash / Save message */}
-{msg && <p style={{ marginTop: 10 }}>{msg}</p>}
+{msg ? <p style={{ marginTop: 10 }}>{msg}</p> : null}
 
 </section>
 );
