@@ -36,11 +36,11 @@ export default function PublicPage(){
 
   const callHref = p.phone ? `tel:${p.phone.replace(/\s+/g,'')}` : null
   const waHref  = p.whatsapp ? `https://wa.me/${p.whatsapp.replace(/\D/g,'')}` : null
-  const mailHref = null; // no public email yet — keep hidden unless you add a field later
+  const mailHref = null
 
   return (
     <div style={pageWrap}>
-      {/* COMPACT HEADER CARD (like your 2nd screenshot) */}
+      {/* HEADER CARD ONLY */}
       <div style={headerCard}>
         <div style={headerLeft}>
           <div style={logoDot}>★</div>
@@ -57,13 +57,8 @@ export default function PublicPage(){
         </div>
       </div>
 
-      {/* Title line below (matches screenshot hierarchy) */}
-      <h1 style={h1Title}>{p.name || p.slug}</h1>
-      <div style={titleSub}>{[p.trade, p.city].filter(Boolean).join(' • ')}</div>
-
       {/* GRID */}
       <div style={grid2}>
-        {/* About (with areas chips) */}
         <Card title="About">
           <p style={{marginTop:0,marginBottom:14}}>
             {services[0]
@@ -78,7 +73,6 @@ export default function PublicPage(){
           )}
         </Card>
 
-        {/* Prices */}
         <Card title="Prices">
           <ul style={listReset}>
             {priceLines.length===0 && <li style={{opacity:.7}}>Please ask for a quote.</li>}
@@ -91,7 +85,6 @@ export default function PublicPage(){
           </ul>
         </Card>
 
-        {/* Services */}
         <Card title="Services">
           <ul style={ulBullets}>
             {services.length===0 && <li style={{opacity:.7}}>No services listed yet.</li>}
@@ -99,7 +92,6 @@ export default function PublicPage(){
           </ul>
         </Card>
 
-        {/* Hours + Contact */}
         <Card>
           <div style={{display:'grid',gap:16}}>
             <div>
@@ -116,7 +108,6 @@ export default function PublicPage(){
           </div>
         </Card>
 
-        {/* Gallery (placeholders like the mock) */}
         <Card title="Gallery" wide>
           <div style={galleryGrid}>
             <div style={galleryItem}><div style={imgPlaceholder}>work photo</div></div>
@@ -136,7 +127,6 @@ export default function PublicPage(){
 }
 
 /* ---------- Components ---------- */
-
 function Card({ title, wide=false, children }){
   return (
     <section style={{...card, gridColumn: wide ? '1 / -1' : 'auto'}}>
@@ -147,114 +137,36 @@ function Card({ title, wide=false, children }){
 }
 
 /* ---------- Styles ---------- */
+const pageWrap = { maxWidth: 980, margin: '28px auto', padding: '0 16px 48px', color: '#eaf2ff' }
 
-const pageWrap = {
-  maxWidth: 980,
-  margin: '28px auto',
-  padding: '0 16px 48px',
-  color: '#eaf2ff',
-  background: 'transparent'
-}
-
-/* Header card styles */
 const headerCard = {
-  display:'flex',
-  alignItems:'center',
-  justifyContent:'space-between',
-  gap:16,
-  padding:'16px 18px',
-  borderRadius:16,
-  border:'1px solid #183153',
-  background:'linear-gradient(180deg,#0f213a,#0b1524)',
-  marginBottom:16
+  display:'flex', alignItems:'center', justifyContent:'space-between', gap:16,
+  padding:'16px 18px', borderRadius:16, border:'1px solid #183153',
+  background:'linear-gradient(180deg,#0f213a,#0b1524)', marginBottom:20
 }
-
 const headerLeft = { display:'flex', alignItems:'center', gap:12 }
-
 const logoDot = {
-  width:48, height:48, borderRadius:14,
-  display:'flex', alignItems:'center', justifyContent:'center',
-  background:'#63d3e0', color:'#0a0f1c',
-  fontWeight:800, fontSize:20
+  width:48,height:48,borderRadius:14,display:'flex',alignItems:'center',justifyContent:'center',
+  background:'#63d3e0',color:'#0a0f1c',fontWeight:800,fontSize:20
 }
+const headerName = { fontWeight:800,fontSize:22,lineHeight:'24px' }
+const headerSub = { opacity:.75,fontSize:14,marginTop:4 }
+const ctaRow = { display:'flex',gap:10,flexWrap:'wrap' }
 
-const headerName = { fontWeight:800, fontSize:22, lineHeight:'24px' }
-const headerSub  = { opacity:.75, fontSize:14, marginTop:4 }
+const btn = { padding:'10px 16px',borderRadius:12,border:'1px solid #2f3c4f',background:'#1f2937',color:'#ffffff',textDecoration:'none',fontWeight:700 }
+const btnPrimary = { background:'linear-gradient(135deg,#66e0b9,#8ab4ff)',color:'#08101e',border:'1px solid #2d4e82' }
 
-const ctaRow = { display:'flex', gap:10, flexWrap:'wrap' }
+const h2 = { margin:'0 0 10px 0',fontSize:18 }
+const h3 = { margin:'0 0 8px 0',fontSize:16 }
+const card = { padding:16,borderRadius:16,border:'1px solid #183153',background:'linear-gradient(180deg,#0f213a,#0b1524)' }
+const grid2 = { display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginTop:16 }
 
-const btn = {
-  padding:'10px 16px',
-  borderRadius:12,
-  border:'1px solid #2f3c4f',
-  background:'#1f2937',
-  color:'#ffffff',
-  textDecoration:'none',
-  fontWeight:700
-}
-const btnPrimary = {
-  background:'linear-gradient(135deg,#66e0b9,#8ab4ff)',
-  color:'#08101e',
-  border:'1px solid #2d4e82'
-}
+const areaPill = { padding:'6px 10px',borderRadius:999,border:'1px solid #27406e',background:'#0c1a2e',fontSize:13 }
+const tag = { fontSize:12,padding:'2px 8px',borderRadius:999,border:'1px solid #27406e',background:'#0c1a2e',color:'#b8ccff' }
+const ulBullets = { margin:0,paddingLeft:20,display:'grid',gap:6 }
+const listReset = { margin:0,padding:0,listStyle:'none' }
+const contactLink = { color:'#b8ccff',textDecoration:'none' }
 
-/* Title below header */
-const h1Title = { margin:'10px 0 6px 0', fontSize:48, lineHeight:1.05, fontWeight:800 }
-const titleSub = { opacity:.7, marginBottom:12, fontSize:20 }
-
-/* Cards / grid */
-const h2 = { margin:'0 0 10px 0', fontSize:18 }
-const h3 = { margin:'0 0 8px 0', fontSize:16 }
-
-const card = {
-  padding:16,
-  borderRadius:16,
-  border:'1px solid #183153',
-  background:'linear-gradient(180deg,#0f213a,#0b1524)'
-}
-
-const grid2 = {
-  display:'grid',
-  gridTemplateColumns:'1fr 1fr',
-  gap:16,
-  marginTop:16
-}
-
-const areaPill = {
-  padding:'6px 10px',
-  borderRadius:999,
-  border:'1px solid #27406e',
-  background:'#0c1a2e',
-  fontSize:13
-}
-
-const tag = {
-  fontSize:12,
-  padding:'2px 8px',
-  borderRadius:999,
-  border:'1px solid #27406e',
-  background:'#0c1a2e',
-  color:'#b8ccff'
-}
-
-const ulBullets = { margin:0, paddingLeft:20, display:'grid', gap:6 }
-const listReset = { margin:0, padding:0, listStyle:'none' }
-const contactLink = { color:'#b8ccff', textDecoration:'none' }
-
-/* Gallery */
-const galleryGrid = {
-  display:'grid',
-  gridTemplateColumns:'1fr 1fr 1fr',
-  gap:16
-}
-const galleryItem = {
-  height:220,
-  borderRadius:14,
-  border:'1px solid #27406e',
-  background:'#0b1627',
-  overflow:'hidden'
-}
-const imgPlaceholder = {
-  width:'100%', height:'100%', display:'flex', alignItems:'center', justifyContent:'center',
-  opacity:.75
-}
+const galleryGrid = { display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16 }
+const galleryItem = { height:220,borderRadius:14,border:'1px solid #27406e',background:'#0b1627',overflow:'hidden' }
+const imgPlaceholder = { width:'100%',height:'100%',display:'flex',alignItems:'center',justifyContent:'center',opacity:.75 }
