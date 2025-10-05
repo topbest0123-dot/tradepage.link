@@ -140,7 +140,7 @@ export default function Dashboard(){
       {/* Zones / Areas stays separate */}
       {textarea('Zones / Areas (comma separated)', 'areas', 'e.g. Camden, Islington, Hackney')}
 
-      {textarea('Services (comma separated)', 'services', 'e.g. nRegular clean, Deep clean, End of tenancy')}
+      {textarea('Services (comma separated)', 'services', 'e.g. Regular clean, Deep clean, End of tenancy')}
       {textarea('Prices (free text, one per line optional)', 'prices', 'e.g.\nRegular clean: £18/hr\nDeep clean: from £120')}
       {textarea('Opening hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
