@@ -1,6 +1,4 @@
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-export const fetchCache = 'force-no-store';
+'client'
 import Script from 'next/script'
 import NavAuth from '@/components/NavAuth'
 
