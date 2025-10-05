@@ -8,12 +8,11 @@ export default function AuthCallback() {
   const router = useRouter()
 
   useEffect(() => {
-    const go = async () => {
-      await supabase.auth.getSession()
+    (async () => {
+      await supabase.auth.getSession() // establishes session
       router.replace('/dashboard')
-    }
-    go()
+    })()
   }, [router])
 
-  return <main style={{maxWidth:420, margin:'80px auto'}}>Signing you in…</main>
+  return <main className="max-w-md mx-auto mt-20 p-4">Signing you in…</main>
 }
