@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AuthLinks from '@/components/AuthLinks';
 
 export const metadata = {
   title: 'TradePage',
@@ -32,10 +33,7 @@ export default function RootLayout({ children }) {
               <b>TradePage</b>{' '}
               <span style={{ opacity: 0.7 }}>— Your business in a link</span>
             </div>
-            <nav style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-  <Link href="/signin" style={{ textDecoration: 'underline' }}>Sign in</Link>
-  <Link href="/dashboard" style={{ textDecoration: 'underline' }}>Dashboard</Link>
-</nav>
+           <AuthLinks />
 
           </header>
 
