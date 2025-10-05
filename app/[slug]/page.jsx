@@ -24,8 +24,14 @@ export default function PublicPage(){
   const areas = useMemo(() =>
     (p?.areas || '').split(',').map(s => s.trim()).filter(Boolean), [p]
   )
-  const services = useMemo(() =>
-    (p?.services || '').split('\n').map(s => s.trim()).filter(Boolean), [p]
+ const services = useMemo(() => {
+  if (!p?.services) return [];
+  return p.services
+    .split(/[,\n]+/) // ✅ split by comma or newline
+    .map(s => s.trim())
+    .filter(Boolean);
+}, [p]);
+
   )
   const priceLines = useMemo(() =>
     (p?.prices || '').split('\n').map(s => s.trim()).filter(Boolean), [p]
