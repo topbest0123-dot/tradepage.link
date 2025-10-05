@@ -206,7 +206,7 @@ export default function Dashboard() {
       )}
 
       {/* Save button */}
-      <button
+           <button
         onClick={save}
         style={{
           padding: '10px 14px',
@@ -226,3 +226,4 @@ export default function Dashboard() {
     </section>
   );
 }
+
