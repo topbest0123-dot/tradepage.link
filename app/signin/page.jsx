@@ -1,7 +1,7 @@
+'use client'
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
-'use client'
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
