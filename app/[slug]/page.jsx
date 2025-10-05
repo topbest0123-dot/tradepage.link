@@ -21,36 +21,22 @@ export default function PublicPage(){
     load()
   }, [slug])
 
-  const areas = useMemo(() =>
-    (p?.areas || '').split(',').map(s => s.trim()).filter(Boolean), [p]
+  // Parse areas (comma separated)
+  const areas = useMemo(
+    () => (p?.areas || '').split(',').map(s => s.trim()).filter(Boolean),
+    [p]
   )
-<Card title="Services">
-  {services.length > 0 ? (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-      {services.map((s, i) => (
-        <span
-          key={i}
-          style={{
-            padding: '6px 12px',
-            borderRadius: 999,
-            border: '1px solid #27406e',
-            background: '#0c1a2e',
-            color: '#d1e1ff',
-            fontSize: 13,
-          }}
-        >
-          {s}
-        </span>
-      ))}
-    </div>
-  ) : (
-    <div style={{ opacity: 0.7 }}>No services listed yet.</div>
-  )}
-</Card>
 
-  )
-  const priceLines = useMemo(() =>
-    (p?.prices || '').split('\n').map(s => s.trim()).filter(Boolean), [p]
+  // Parse services (comma OR newline; supports old data)
+  const services = useMemo(() => {
+    if (!p?.services) return []
+    return p.services.split(/[,\n]+/).map(s => s.trim()).filter(Boolean)
+  }, [p])
+
+  // Parse prices (line-per-item)
+  const priceLines = useMemo(
+    () => (p?.prices || '').split('\n').map(s => s.trim()).filter(Boolean),
+    [p]
   )
 
   if (notFound) return <div style={pageWrap}><p>This page doesn’t exist yet.</p></div>
@@ -79,26 +65,25 @@ export default function PublicPage(){
 
       {/* GRID */}
       <div style={grid2}>
-        {/* About = text only */}
-<Card title="About">
-  <p style={{
-    marginTop: 0,
-    marginBottom: 0,
-    whiteSpace: 'pre-wrap',      // keep user line breaks
-    overflowWrap: 'anywhere',    // ✅ strongest: break anywhere if needed
-    wordBreak: 'break-word',     // fallback (older support)
-    lineHeight: 1.5,
-    maxWidth: '100%',            // don't exceed column width
-  }}>
-    {p.about && p.about.trim().length > 0
-      ? p.about
-      : (services[0]
-          ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
-          : 'Reliable, friendly and affordable. Free quotes, no hidden fees.')}
-  </p>
-</Card>
-
-
+        {/* About = text only, wraps properly */}
+        <Card title="About">
+          <p style={{
+            marginTop: 0,
+            marginBottom: 0,
+            whiteSpace: 'pre-wrap',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
+            lineHeight: 1.5,
+            maxWidth: '100%',
+          }}>
+            {p.about && p.about.trim().length > 0
+              ? p.about
+              : (services[0]
+                  ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
+                  : 'Reliable, friendly and affordable. Free quotes, no hidden fees.')
+            }
+          </p>
+        </Card>
 
         {/* Prices */}
         <Card title="Prices">
@@ -113,43 +98,27 @@ export default function PublicPage(){
           </ul>
         </Card>
 
-        {/* NEW: Areas / Zones in its own card */}
+        {/* Areas / Zones */}
         <Card title="Areas we cover">
           {areas.length>0 ? (
             <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
-              {areas.map((a,i)=> <span key={i} style={areaPill}>{a}</span>)}
+              {areas.map((a,i)=> <span key={i} style={chip}>{a}</span>)}
             </div>
           ) : (
             <div style={{opacity:.7}}>No areas listed yet.</div>
           )}
         </Card>
 
-        {/* Services */}
+        {/* Services as chips */}
         <Card title="Services">
-  {services.length > 0 ? (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-      {services.map((s, i) => (
-        <span
-          key={i}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '999px',
-            border: '1px solid #27406e',
-            background: '#0c1a2e',
-            color: '#d1e1ff',
-            fontSize: '13px',
-          }}
-        >
-          {s}
-        </span>
-      ))}
-    </div>
-  ) : (
-    <div style={{ opacity: 0.7 }}>No services listed yet.</div>
-  )}
-</Card>
-
-
+          {services.length>0 ? (
+            <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+              {services.map((s,i)=> <span key={i} style={chip}>{s}</span>)}
+            </div>
+          ) : (
+            <div style={{opacity:.7}}>No services listed yet.</div>
+          )}
+        </Card>
 
         {/* Hours */}
         <Card title="Hours">
@@ -186,7 +155,13 @@ function Card({ title, wide=false, children }){
 }
 
 /* ---------- Styles ---------- */
-const pageWrap = { maxWidth: 980, margin: '28px auto', padding: '0 16px 48px', color: '#eaf2ff', overflowX: 'hidden' }
+const pageWrap = {
+  maxWidth: 980,
+  margin: '28px auto',
+  padding: '0 16px 48px',
+  color: '#eaf2ff',
+  overflowX: 'hidden',
+}
 
 const headerCard = {
   display:'flex', alignItems:'center', justifyContent:'space-between', gap:16,
@@ -206,12 +181,24 @@ const btn = { padding:'10px 16px',borderRadius:12,border:'1px solid #2f3c4f',bac
 const btnPrimary = { background:'linear-gradient(135deg,#66e0b9,#8ab4ff)',color:'#08101e',border:'1px solid #2d4e82' }
 
 const h2 = { margin:'0 0 10px 0',fontSize:18 }
-const card = { padding:16,borderRadius:16,border:'1px solid #183153',background:'linear-gradient(180deg,#0f213a,#0b1524),minWidth: 0' }
+const card = {
+  padding:16,
+  borderRadius:16,
+  border:'1px solid #183153',
+  background:'linear-gradient(180deg,#0f213a,#0b1524)',
+  minWidth: 0, // important so long content can wrap inside grid
+}
 const grid2 = { display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,marginTop:16 }
 
-const areaPill = { padding:'6px 10px',borderRadius:999,border:'1px solid #27406e',background:'#0c1a2e',fontSize:13 }
+const chip = {
+  padding:'6px 12px',
+  borderRadius:999,
+  border:'1px solid #27406e',
+  background:'#0c1a2e',
+  color:'#d1e1ff',
+  fontSize:13,
+}
 const tag = { fontSize:12,padding:'2px 8px',borderRadius:999,border:'1px solid #27406e',background:'#0c1a2e',color:'#b8ccff' }
-const ulBullets = { margin:0,paddingLeft:20,display:'grid',gap:6 }
 const listReset = { margin:0,padding:0,listStyle:'none' }
 
 const galleryGrid = { display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:16 }
