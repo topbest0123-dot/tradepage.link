@@ -145,16 +145,22 @@ export default function Dashboard(){
       {textarea('Opening hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
       <button onClick={save}
-        style={{padding:'10px 14px', borderRadius:12, border:'1px solid #27406e',
-                background:'linear-gradient(135deg,#66e0b9,#8ab4ff)', color:'#08101e',
-                fontWeight:700, marginRight:12}}>
-        Save
-     
-    {/* Flash / Save message */}
-{msg && (
-  <p style={{ marginTop: 10 }}>{msg}</p>
-)}
+  style={{
+    padding: '10px 14px',
+    borderRadius: 12,
+    border: '1px solid #27406e',
+    background: 'linear-gradient(135deg,#66e0b9,#8ab4ff)',
+    color: '#08101e',
+    fontWeight: 700,
+    marginRight: 12
+  }}>
+  Save
+</button>
+
+{/* Flash / Save message */}
+{msg && <p style={{ marginTop: 10 }}>{msg}</p>}
 </section>
 );
 }
+
 
