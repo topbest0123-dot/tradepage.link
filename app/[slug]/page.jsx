@@ -12,7 +12,7 @@ export default function PublicPage(){
     const load = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('slug,name,trade,city,phone,whatsapp,areas,services,prices,hours')
+        .select('slug,name,trade,city,phone,whatsapp,about,areas,services,prices,hours')
         .ilike('slug', slug)
         .maybeSingle()
       if (error) console.error(error)
@@ -57,20 +57,19 @@ export default function PublicPage(){
 
       {/* GRID */}
       <div style={grid2}>
+        {/* About = text only */}
         <Card title="About">
-          <p style={{marginTop:0,marginBottom:14}}>
-            {services[0]
-              ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
-              : 'Reliable, friendly and affordable. Free quotes, no hidden fees.'
+          <p style={{marginTop:0,marginBottom:0}}>
+            {p.about && p.about.trim().length > 0
+              ? p.about
+              : (services[0]
+                  ? `${services[0]}. Reliable, friendly and affordable. Free quotes, no hidden fees.`
+                  : 'Reliable, friendly and affordable. Free quotes, no hidden fees.')
             }
           </p>
-          {areas.length>0 && (
-            <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
-              {areas.map((a,i)=> <span key={i} style={areaPill}>{a}</span>)}
-            </div>
-          )}
         </Card>
 
+        {/* Prices */}
         <Card title="Prices">
           <ul style={listReset}>
             {priceLines.length===0 && <li style={{opacity:.7}}>Please ask for a quote.</li>}
@@ -83,6 +82,18 @@ export default function PublicPage(){
           </ul>
         </Card>
 
+        {/* NEW: Areas / Zones in its own card */}
+        <Card title="Areas we cover">
+          {areas.length>0 ? (
+            <div style={{display:'flex',flexWrap:'wrap',gap:8}}>
+              {areas.map((a,i)=> <span key={i} style={areaPill}>{a}</span>)}
+            </div>
+          ) : (
+            <div style={{opacity:.7}}>No areas listed yet.</div>
+          )}
+        </Card>
+
+        {/* Services */}
         <Card title="Services">
           <ul style={ulBullets}>
             {services.length===0 && <li style={{opacity:.7}}>No services listed yet.</li>}
@@ -90,10 +101,12 @@ export default function PublicPage(){
           </ul>
         </Card>
 
+        {/* Hours */}
         <Card title="Hours">
           <div style={{opacity:.9}}>{p.hours || 'Mon–Sat 08:00–18:00'}</div>
         </Card>
 
+        {/* Gallery */}
         <Card title="Gallery" wide>
           <div style={galleryGrid}>
             <div style={galleryItem}><div style={imgPlaceholder}>work photo</div></div>
