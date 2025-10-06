@@ -4,8 +4,8 @@
 import { createClient } from '@supabase/supabase-js';
 
 function getServerSupabase() {
-  const url = process.env.https://ezwvavoikoirrvxujnfm.supabase.co;
-  const key = process.env.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV6d3Zhdm9pa29pcnJ2eHVqbmZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0ODc3NzgsImV4cCI6MjA3NTA2Mzc3OH0.6F4rDAMNrBRivWSos88Emb39gBChQCd37YSyizm5bYk;
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   return createClient(url, key, { auth: { persistSession: false } });
 }
 
