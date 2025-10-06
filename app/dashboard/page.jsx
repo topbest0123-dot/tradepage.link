@@ -3,13 +3,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
-const slugify = (s) =>
-  String(s || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '-') // keep alnum + '-'
-    .replace(/-+/g, '-');
-
 export default function Dashboard() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -32,9 +25,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const load = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         router.replace('/signin');
         return;
@@ -77,17 +68,20 @@ export default function Dashboard() {
   const save = async () => {
     setMsg('');
 
-    const slug = slugify(form.slug);
+    const slug = (form.slug || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-') // keep alnum + '-'
+      .replace(/-+/g, '-');
 
     if (!slug) {
       setMsg('Please choose a slug.');
       return;
     }
 
-    // normalize services (allow user to paste with new lines, etc.)
     const normalizedServices = (form.services || '')
-      .replace(/\n+/g, ',') // newlines -> commas
-      .replace(/,+/g, ',') // collapse duplicate commas
+      .replace(/\n+/g, ',')
+      .replace(/,+/g, ',')
       .trim();
 
     const row = {
@@ -120,10 +114,15 @@ export default function Dashboard() {
 
   if (loading) return <p>Loading…</p>;
 
-  // Build preview URL from current slug input
-  const normalizedSlug = slugify(form.slug);
-  // If your public route is different (e.g., `/p/${slug}`), change here:
-  const previewUrl = normalizedSlug ? `/${normalizedSlug}` : '';
+  // Build preview path from whatever is currently typed in the slug input
+  const previewPath = (() => {
+    const s = (form.slug || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-');
+    return s ? `/${s}` : '';
+  })();
 
   const input = (label, name, placeholder = '') => (
     <label style={{ display: 'block', marginBottom: 12 }}>
@@ -206,66 +205,61 @@ export default function Dashboard() {
       )}
       {textarea('Opening hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
-    {/* Actions: Save + Preview */}
-<div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
-  <button
-    onClick={save}
-    style={{
-      padding: '10px 14px',
-      borderRadius: 12,
-      border: '1px solid #27406e',
-      background: 'linear-gradient(135deg,#66e0b9,#8ab4ff)',
-      color: '#08101e',
-      fontWeight: 700,
-    }}
-  >
-    Save
-  </button>
+      {/* Actions: Save + Preview */}
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
+        <button
+          onClick={save}
+          style={{
+            padding: '10px 14px',
+            borderRadius: 12,
+            border: '1px solid #27406e',
+            background: 'linear-gradient(135deg,#66e0b9,#8ab4ff)',
+            color: '#08101e',
+            fontWeight: 700,
+          }}
+        >
+          Save
+        </button>
 
-  {Boolean((form.slug || '').trim()) ? (
-    <a
-      href={`/${(form.slug || '')
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9-]/g, '-')      // keep only a–z,0–9, dash
-        .replace(/-+/g, '-')}`}            // collapse multiple dashes
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        padding: '10px 14px',
-        borderRadius: 12,
-        border: '1px solid #27406e',
-        background: 'transparent',
-        color: '#eaf2ff',
-        textDecoration: 'none',
-        fontWeight: 700,
-      }}
-    >
-      Preview public profile
-    </a>
-  ) : (
-    <button
-      disabled
-      title="Enter a slug to preview"
-      style={{
-        padding: '10px 14px',
-        borderRadius: 12,
-        border: '1px solid #27406e',
-        background: 'transparent',
-        color: '#8aa0c8',
-        fontWeight: 700,
-        opacity: 0.6,
-        cursor: 'not-allowed',
-      }}
-    >
-      Preview public profile
-    </button>
-  )}
-</div>
+        {previewPath ? (
+          <a
+            href={previewPath}            // opens the public profile
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: '10px 14px',
+              borderRadius: 12,
+              border: '1px solid #27406e',
+              background: 'transparent',
+              color: '#eaf2ff',
+              textDecoration: 'none',
+              fontWeight: 700,
+            }}
+          >
+            Preview public profile
+          </a>
+        ) : (
+          <button
+            disabled
+            title="Enter a slug to preview"
+            style={{
+              padding: '10px 14px',
+              borderRadius: 12,
+              border: '1px solid #27406e',
+              background: 'transparent',
+              color: '#8aa0c8',
+              fontWeight: 700,
+              opacity: 0.6,
+              cursor: 'not-allowed',
+            }}
+          >
+            Preview public profile
+          </button>
+        )}
+      </div>
 
-{/* Flash / Save message */}
-{msg ? <p style={{ marginTop: 10 }}>{msg}</p> : null}
-
+      {/* Flash / Save message */}
+      {msg ? <p style={{ marginTop: 10 }}>{msg}</p> : null}
     </section>
   );
 }
