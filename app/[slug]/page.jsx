@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import Script from 'next/script';
 
 /** Small helper: turn any value into a clean list of strings */
 const toList = (value) =>
@@ -71,6 +72,36 @@ export default function PublicPage() {
             <a href={waHref} style={{ ...btnBaseStyle, ...btnNeutralStyle }}>
               WhatsApp
             </a>
+      <Script
+  id="public-share"
+  strategy="afterInteractive"
+  dangerouslySetInnerHTML={{
+    __html: `
+      (function () {
+        function doShare() {
+          var url = window.location.href;
+          var title = document.title || 'TradePage';
+          if (navigator.share) {
+            navigator.share({ title: title, url: url }).catch(function(){});
+          } else {
+            try {
+              navigator.clipboard.writeText(url).then(
+                function(){ alert('Link copied to clipboard'); },
+                function(){ prompt('Copy this link:', url); }
+              );
+            } catch (e) {
+              prompt('Copy this link:', url);
+            }
+          }
+        }
+        document.addEventListener('click', function (e) {
+          var btn = e.target.closest('#share-btn');
+          if (btn) doShare();
+        }, true);
+      })();
+    `,
+  }}
+/>
           )}
           {/* Share (visual only) */}
 <button
