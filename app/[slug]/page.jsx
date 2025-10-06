@@ -3,15 +3,69 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import Script from 'next/script'; // kept, even though not required, to avoid changing imports
+import Script from 'next/script'; // kept to avoid changing imports
+import { createClient } from '@supabase/supabase-js';
+
+/* ──────────────────────────────────────────────────────────────
+   DYNAMIC OG/TWITTER METADATA (runs on the server)
+   ────────────────────────────────────────────────────────────── */
+
+export const revalidate = 60;           // refresh metadata at most once per minute
+export const dynamic = 'force-static';  // good default for ISR-style pages
+
+export async function generateMetadata({ params }) {
+  const sb = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  const { data: p } = await sb
+    .from('profiles')
+    .select('slug,name,trade,city,avatar_path')
+    .ilike('slug', params.slug)
+    .maybeSingle();
+
+  const title = p?.name || params.slug;
+  const sub = [p?.trade, p?.city].filter(Boolean).join(' • ');
+  const description = sub || 'Your business in a link';
+
+  // Build a public URL for the avatar (or fall back to a default OG image)
+  const avatarUrl = p?.avatar_path
+    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${encodeURIComponent(p.avatar_path)}`
+    : '/og-default.png';
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `/${params.slug}`,
+      siteName: 'TradePage',
+      images: [avatarUrl], // relative works because you set metadataBase in layout
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [avatarUrl],
+    },
+  };
+}
+
+/* ──────────────────────────────────────────────────────────────
+   CLIENT PAGE (your original component)
+   ────────────────────────────────────────────────────────────── */
 
 /** Small helper: turn any value into a clean list of strings */
 const toList = (value) =>
-  String(value ?? '') // safe coerce (handles numbers/null/undefined)
-    .split(/[,\n]+/)  // commas OR new lines
+  String(value ?? '')
+    .split(/[,\n]+/)
     .map((s) => s.trim())
     .filter(Boolean);
-// Build a public URL from a storage path in the 'avatars' bucket
+
+// Build a public URL from a storage path in the 'avatars' bucket (client side)
 const publicUrlFor = (path) =>
   path ? supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl : null;
 
@@ -78,21 +132,21 @@ export default function PublicPage() {
       <div style={headerCardStyle}>
         <div style={headerLeftStyle}>
           {avatarUrl ? (
-  <img
-    src={avatarUrl}
-    alt={`${p.name || p.slug} logo`}
-    style={{
-      width: 48,
-      height: 48,
-      borderRadius: 14,
-      objectFit: 'cover',
-      border: '1px solid #183153',
-      background: '#0b1524',
-    }}
-  />
-) : (
-  <div style={logoDotStyle}>★</div>
-)}
+            <img
+              src={avatarUrl}
+              alt={`${p.name || p.slug} logo`}
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: 14,
+                objectFit: 'cover',
+                border: '1px solid #183153',
+                background: '#0b1524',
+              }}
+            />
+          ) : (
+            <div style={logoDotStyle}>★</div>
+          )}
 
           <div>
             <div style={headerNameStyle}>{p.name || p.slug}</div>
@@ -294,7 +348,7 @@ const cardStyle = {
   borderRadius: 16,
   border: '1px solid #183153',
   background: 'linear-gradient(180deg,#0f213a,#0b1524)',
-  minWidth: 0, // important so long content can wrap inside grid
+  minWidth: 0,
 };
 const grid2Style = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 };
 
