@@ -1,29 +1,40 @@
 // app/head.jsx
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
-
 export default function Head() {
-  const title = 'TradePage — Your business in a link';
-  const desc =
-    'Create a simple public page with your name, trade, city, services, and tap-to-call/WhatsApp.';
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
 
   return (
     <>
-      <title>{title}</title>
+      {/* Basic */}
+      <meta charSet="utf-8" />
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+      />
+      <title>TradePage — Your business in a link</title>
 
-      {/* Open Graph */}
+      {/* Open Graph (default site-wide) */}
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={SITE} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={desc} />
-      <meta property="og:image" content={`${SITE}/og-default.png`} />
+      <meta property="og:site_name" content="TradePage" />
+      <meta
+        property="og:title"
+        content="TradePage — Your business in a link"
+      />
+      <meta
+        property="og:description"
+        content="Your business in a link"
+      />
+      <meta property="og:url" content={siteUrl} />
+      <meta property="og:image" content="/og-default.png" />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={desc} />
-      <meta name="twitter:image" content={`${SITE}/og-default.png`} />
-
-      <link rel="canonical" href={SITE} />
+      <meta name="twitter:title" content="TradePage" />
+      <meta
+        name="twitter:description"
+        content="Your business in a link"
+      />
+      <meta name="twitter:image" content="/og-default.png" />
     </>
   );
 }
