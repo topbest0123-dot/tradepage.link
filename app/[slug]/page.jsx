@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import Script from 'next/script';
+import Script from 'next/script'; // kept, even though not required, to avoid changing imports
 
 /** Small helper: turn any value into a clean list of strings */
 const toList = (value) =>
@@ -50,6 +50,24 @@ export default function PublicPage() {
   const callHref = p?.phone ? `tel:${p.phone.replace(/\s+/g, '')}` : null;
   const waHref = p?.whatsapp ? `https://wa.me/${p.whatsapp.replace(/\D/g, '')}` : null;
 
+  // --- Share handler (native share on mobile, clipboard fallback on desktop) ---
+  const handleShare = () => {
+    const url = window.location.href;
+    const title = document.title || 'TradePage';
+    if (navigator.share) {
+      navigator.share({ title, url }).catch(() => {});
+    } else {
+      try {
+        navigator.clipboard.writeText(url).then(
+          () => alert('Link copied to clipboard'),
+          () => window.prompt('Copy this link:', url)
+        );
+      } catch (e) {
+        window.prompt('Copy this link:', url);
+      }
+    }
+  };
+
   return (
     <div style={pageWrapStyle}>
       {/* HEADER CARD */}
@@ -72,55 +90,26 @@ export default function PublicPage() {
             <a href={waHref} style={{ ...btnBaseStyle, ...btnNeutralStyle }}>
               WhatsApp
             </a>
-      <Script
-  id="public-share"
-  strategy="afterInteractive"
-  dangerouslySetInnerHTML={{
-    __html: `
-      (function () {
-        function doShare() {
-          var url = window.location.href;
-          var title = document.title || 'TradePage';
-          if (navigator.share) {
-            navigator.share({ title: title, url: url }).catch(function(){});
-          } else {
-            try {
-              navigator.clipboard.writeText(url).then(
-                function(){ alert('Link copied to clipboard'); },
-                function(){ prompt('Copy this link:', url); }
-              );
-            } catch (e) {
-              prompt('Copy this link:', url);
-            }
-          }
-        }
-        document.addEventListener('click', function (e) {
-          var btn = e.target.closest('#share-btn');
-          if (btn) doShare();
-        }, true);
-      })();
-    `,
-  }}
-/>
           )}
-          {/* Share (visual only) */}
-<button
-  type="button"
-  id="share-btn"
-  style={{
-    padding: '8px 12px',
-    borderRadius: 10,
-    border: '1px solid #213a6b',
-    background: 'transparent',
-    color: '#eaf2ff',
-    fontWeight: 700,
-    cursor: 'pointer',
-    marginLeft: 8,
-  }}
->
-  Share
-</button>
 
+          {/* Share button */}
+          <button
+            type="button"
+            id="share-btn"
+            onClick={handleShare}
+            style={{
+              padding: '8px 12px',
+              borderRadius: 10,
+              border: '1px solid #213a6b',
+              background: 'transparent',
+              color: '#eaf2ff',
+              fontWeight: 700,
+              cursor: 'pointer',
+              marginLeft: 8,
+            }}
+          >
+            Share
+          </button>
         </div>
       </div>
 
