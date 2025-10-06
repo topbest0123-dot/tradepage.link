@@ -1,61 +1,61 @@
 // app/[slug]/head.jsx
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
-
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
-
 export default async function Head({ params }) {
-  // Fetch minimal data for OG
+  const { slug } = params;
+
+  // Server-side Supabase client using the public anon key is fine for public data
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    { auth: { persistSession: false } }
+  );
+
   const { data } = await supabase
     .from('profiles')
-    .select('slug,name,trade,city,avatar_url')
-    .ilike('slug', params.slug)
+    .select('slug,name,trade,city,about,avatar_path')
+    .ilike('slug', slug)
     .maybeSingle();
 
-  // Title
-  const title = data
-    ? `${data.name || data.slug} — ${[data.trade, data.city].filter(Boolean).join(' • ')}`
-    : 'TradePage';
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
+  const url = `${base}/${slug}`;
 
-  // Description (short and safe)
-  const desc = data
-    ? [data.trade, data.city].filter(Boolean).join(' • ') || 'Your business in a link'
+  const title = data
+    ? `${data.name || data.slug} — ${[data.trade, data.city]
+        .filter(Boolean)
+        .join(' • ')}`
+    : 'TradePage — Your business in a link';
+
+  const desc = data?.about?.trim()
+    ? data.about.trim().slice(0, 160)
     : 'Your business in a link';
 
-  // Absolute URL to the page
-  const url = `${SITE}/${params.slug}`;
-
-  // Absolute image URL (avatar or fallback)
-  const image =
-    data?.avatar_url && data.avatar_url.startsWith('http')
-      ? data.avatar_url
-      : data?.avatar_url
-      ? `${data.avatar_url}` // already absolute from Supabase public bucket
-      : `${SITE}/og-default.png`;
+  // Build a public URL to the avatar in the `avatars` bucket
+  const avatar =
+    data?.avatar_path
+      ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${encodeURIComponent(
+          data.avatar_path
+        )}`
+      : `${base}/og-default.png`;
 
   return (
     <>
       <title>{title}</title>
 
-      {/* Open Graph */}
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content={url} />
+      {/* Open Graph for the profile */}
+      <meta property="og:type" content="article" />
+      <meta property="og:site_name" content="TradePage" />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={desc} />
-      <meta property="og:image" content={image} />
-      <meta property="og:image:alt" content={title} />
+      <meta property="og:url" content={url} />
+      <meta property="og:image" content={avatar} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={desc} />
-      <meta name="twitter:image" content={image} />
-
-      <link rel="canonical" href={url} />
+      <meta name="twitter:image" content={avatar} />
     </>
   );
 }
