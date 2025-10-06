@@ -1,4 +1,5 @@
 import AuthLinks from '@/components/AuthLinks';
+import './globals.css';
 
 export const metadata = {
   title: 'TradePage',
@@ -39,18 +40,7 @@ export default function RootLayout({ children }) {
         </div>
 
         {/* Keep header links white in every state (extra safety) */}
-        <style jsx global>{`
-          header a,
-          header a:any-link,
-          header a:-webkit-any-link,
-          header a:link,
-          header a:visited,
-          header a:hover,
-          header a:active,
-          header a:focus-visible {
-            color: #fff !important;
-          }
-        `}</style>
+     
       </body>
     </html>
   );
