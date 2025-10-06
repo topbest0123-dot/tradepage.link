@@ -4,6 +4,26 @@ import './globals.css';
 export const metadata = {
   title: 'TradePage',
   description: 'Your business in a link',
+  // app/layout.jsx
+export const metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link'
+  ),
+  title: 'TradePage',
+  description: 'Your business in a link',
+  openGraph: {
+    title: 'TradePage',
+    description: 'Your business in a link',
+    url: '/',
+    siteName: 'TradePage',
+    images: ['/og-default.png'], // place a default image in /public
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'TradePage',
+    description: 'Your business in a link',
+    images: ['/og-default.png'],
+  },
 };
 
 export default function RootLayout({ children }) {
