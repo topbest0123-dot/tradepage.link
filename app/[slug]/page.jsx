@@ -72,6 +72,24 @@ export default function PublicPage() {
               WhatsApp
             </a>
           )}
+          {/* Share (visual only) */}
+<button
+  type="button"
+  id="share-btn"
+  style={{
+    padding: '8px 12px',
+    borderRadius: 10,
+    border: '1px solid #213a6b',
+    background: 'transparent',
+    color: '#eaf2ff',
+    fontWeight: 700,
+    cursor: 'pointer',
+    marginLeft: 8,
+  }}
+>
+  Share
+</button>
+
         </div>
       </div>
 
