@@ -206,61 +206,66 @@ export default function Dashboard() {
       )}
       {textarea('Opening hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
-      {/* Actions */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
-        <button
-          onClick={save}
-          style={{
-            padding: '10px 14px',
-            borderRadius: 12,
-            border: '1px solid #27406e',
-            background: 'linear-gradient(135deg,#66e0b9,#8ab4ff)',
-            color: '#08101e',
-            fontWeight: 700,
-          }}
-        >
-          Save
-        </button>
+     {/* Actions: Save + Preview */}
+<div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
+  <button
+    onClick={save}
+    style={{
+      padding: '10px 14px',
+      borderRadius: 12,
+      border: '1px solid #27406e',
+      background: 'linear-gradient(135deg,#66e0b9,#8ab4ff)',
+      color: '#08101e',
+      fontWeight: 700,
+    }}
+  >
+    Save
+  </button>
 
-        {normalizedSlug ? (
-          <a
-            href={previewUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              padding: '10px 14px',
-              borderRadius: 12,
-              border: '1px solid #27406e',
-              background: 'transparent',
-              color: '#eaf2ff',
-              textDecoration: 'none',
-              fontWeight: 700,
-            }}
-          >
-            Preview public profile
-          </a>
-        ) : (
-          <button
-            disabled
-            title="Enter a slug to preview"
-            style={{
-              padding: '10px 14px',
-              borderRadius: 12,
-              border: '1px solid #27406e',
-              background: 'transparent',
-              color: '#8aa0c8',
-              fontWeight: 700,
-              opacity: 0.6,
-              cursor: 'not-allowed',
-            }}
-          >
-            Preview public profile
-          </button>
-        )}
-      </div>
+  {Boolean((form.slug || '').trim()) ? (
+    <a
+      href={`/${(form.slug || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '-')
+        .replace(/-+/g, '-')}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        padding: '10px 14px',
+        borderRadius: 12,
+        border: '1px solid #27406e',
+        background: 'transparent',
+        color: '#eaf2ff',
+        textDecoration: 'none',
+        fontWeight: 700,
+      }}
+    >
+      Preview public profile
+    </a>
+  ) : (
+    <button
+      disabled
+      title="Enter a slug to preview"
+      style={{
+        padding: '10px 14px',
+        borderRadius: 12,
+        border: '1px solid #27406e',
+        background: 'transparent',
+        color: '#8aa0c8',
+        fontWeight: 700,
+        opacity: 0.6,
+        cursor: 'not-allowed',
+      }}
+    >
+      Preview public profile
+    </button>
+  )}
+</div>
 
-      {/* Flash / Save message */}
-      {msg ? <p style={{ marginTop: 10 }}>{msg}</p> : null}
+{/* Flash / Save message */}
+{msg ? <p style={{ marginTop: 10 }}>{msg}</p> : null}
+
     </section>
   );
 }
