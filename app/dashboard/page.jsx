@@ -113,6 +113,15 @@ export default function Dashboard() {
   };
 
   if (loading) return <p>Loading…</p>;
+  // build preview href from whatever is typed in the slug field
+const previewHref = (() => {
+  const s = (form.slug || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')  // keep only letters/numbers/dash
+    .replace(/-+/g, '-');         // collapse multiple dashes
+  return s ? `/${s}` : '';
+})();
 
   // Build preview path from whatever is currently typed in the slug input
   const previewPath = (() => {
@@ -205,9 +214,10 @@ export default function Dashboard() {
       )}
       {textarea('Opening hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
-     {/* Actions row (visual only) */}
+    {/* Actions: Save + Preview */}
 <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
   <button
+    type="button"
     onClick={save}
     style={{
       padding: '10px 14px',
@@ -221,24 +231,44 @@ export default function Dashboard() {
     Save
   </button>
 
-  {/* New visual-only button (styled like Sign out) */}
-  <button
-    type="button"
-    style={{
-      padding: '10px 14px',
-      borderRadius: 12,
-      border: '1px solid #27406e',
-      background: 'transparent',
-      color: '#eaf2ff',
-      fontWeight: 700,
-      cursor: 'pointer',
-    }}
-  >
-    Preview
-  </button>
+  {previewHref ? (
+    <a
+      href={previewHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        padding: '10px 14px',
+        borderRadius: 12,
+        border: '1px solid #213a6b',
+        background: 'transparent',
+        color: '#eaf2ff',
+        fontWeight: 700,
+        textDecoration: 'none',
+        cursor: 'pointer',
+      }}
+    >
+      Preview
+    </a>
+  ) : (
+    <button
+      type="button"
+      disabled
+      title="Enter a slug to preview"
+      style={{
+        padding: '10px 14px',
+        borderRadius: 12,
+        border: '1px solid #213a6b',
+        background: 'transparent',
+        color: '#8aa0c8',
+        fontWeight: 700,
+        opacity: 0.6,
+        cursor: 'not-allowed',
+      }}
+    >
+      Preview
+    </button>
+  )}
 </div>
-
-
       {/* Flash / Save message */}
       {msg ? <p style={{ marginTop: 10 }}>{msg}</p> : null}
     </section>
