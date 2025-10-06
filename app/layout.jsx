@@ -1,59 +1,50 @@
 // app/layout.jsx
-import AuthLinks from '@/components/AuthLinks';
 import './globals.css';
-
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
-const OG_IMAGE = new URL('/og-default.png', SITE_URL).toString();
+import AuthLinks from '@/components/AuthLinks';
 
 export const metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: 'TradePage',
-    template: '%s — TradePage',
-  },
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link'
+  ),
+  title: { default: 'TradePage', template: '%s — TradePage' },
   description: 'Your business in a link',
   openGraph: {
     type: 'website',
-    url: '/', // resolved against metadataBase
+    url: '/',
     siteName: 'TradePage',
     title: 'TradePage — Your business in a link',
     description: 'Your business in a link',
     images: [
-      {
-        url: OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'TradePage',
-      },
+      { url: '/og-default.png', width: 1200, height: 630, alt: 'TradePage' },
     ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'TradePage',
     description: 'Your business in a link',
-    images: [OG_IMAGE],
+    images: ['/og-default.png'],
   },
 };
 
 export default function RootLayout({ children }) {
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
+
   return (
     <html lang="en">
       <head>
-        {/* Hard fallback so tags show in plain view-source, too */}
-        <link rel="canonical" href={SITE_URL} />
+        {/* Hard fallback so tags are visible in plain view-source as well */}
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="TradePage" />
         <meta property="og:title" content="TradePage — Your business in a link" />
         <meta property="og:description" content="Your business in a link" />
-        <meta property="og:url" content={SITE_URL} />
-        <meta property="og:image" content={OG_IMAGE} />
+        <meta property="og:url" content={siteUrl} />
+        <meta property="og:image" content="/og-default.png" />
+
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="TradePage" />
         <meta name="twitter:description" content="Your business in a link" />
-        <meta name="twitter:image" content={OG_IMAGE} />
-        {/* tiny probe to confirm head injection */}
-        <meta property="og:sentinel" content="1" />
+        <meta name="twitter:image" content="/og-default.png" />
       </head>
 
       <body
