@@ -68,6 +68,88 @@ const toList = (value) =>
 // Build a public URL from a storage path in the 'avatars' bucket (client side)
 const publicUrlFor = (path) =>
   path ? supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl : null;
+// --- add at the very top of app/[slug]/page.jsx ---
+// Server-side Supabase client just for metadata
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseSSR = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  { auth: { persistSession: false } }
+);
+
+// Build a public URL from a storage path in the 'avatars' bucket
+function avatarPublicUrl(path) {
+  if (!path) return null;
+  const { data } = supabaseSSR.storage.from('avatars').getPublicUrl(path);
+  return data?.publicUrl || null;
+}
+
+// This provides Open Graph / Twitter tags for /[slug]
+export async function generateMetadata({ params }) {
+  const slug = String(params?.slug || '').toLowerCase();
+  const site = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
+  const canonicalUrl = `${site}/${slug}`;
+
+  // Fetch the row for this slug
+  const { data, error } = await supabaseSSR
+    .from('profiles')
+    .select('name, trade, city, about, avatar_path')
+    .ilike('slug', slug)
+    .maybeSingle();
+
+  // Fallbacks if not found
+  if (error || !data) {
+    return {
+      title: slug,
+      description: 'A TradePage profile',
+      alternates: { canonical: canonicalUrl },
+      openGraph: {
+        type: 'website',
+        url: canonicalUrl,
+        siteName: 'TradePage',
+        title: slug,
+        description: 'A TradePage profile',
+        images: [{ url: '/og-default.png', width: 1200, height: 630, alt: 'TradePage' }],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: slug,
+        description: 'A TradePage profile',
+        images: ['/og-default.png'],
+      },
+    };
+  }
+
+  const displayName = data.name || slug;
+  const title = [displayName, data.trade, data.city].filter(Boolean).join(' — ');
+  const description =
+    (data.about && data.about.trim()) ||
+    [data.trade, data.city].filter(Boolean).join(' • ') ||
+    'Your business in a link';
+  const imageUrl = avatarPublicUrl(data.avatar_path) || '/og-default.png';
+
+  return {
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      type: 'profile', // or 'website' if you prefer
+      url: canonicalUrl,
+      siteName: 'TradePage',
+      title,
+      description,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: displayName }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
+// --- end addition ---
 
 export default function PublicPage() {
   const { slug } = useParams();
