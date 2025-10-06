@@ -1,52 +1,52 @@
-// app/[slug]/layout.jsx (SERVER component)
-import { supabaseServer } from '@/lib/supabaseServer';
+// app/[slug]/layout.jsx
+import { createClient } from '@supabase/supabase-js';
 
 export async function generateMetadata({ params }) {
-  const slug = params.slug;
+  const { slug } = params;
 
-  const { data } = await supabaseServer
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    { auth: { persistSession: false } }
+  );
+
+  const { data } = await supabase
     .from('profiles')
-    .select('slug,name,trade,city,about,avatar_url')
+    .select('slug,name,trade,city,about,avatar_path')
     .ilike('slug', slug)
     .maybeSingle();
 
-  if (!data) {
-    return {
-      title: 'TradePage',
-      description: 'Public profile',
-      openGraph: { images: ['/og-default.png'] },
-      twitter: { images: ['/og-default.png'] },
-    };
-  }
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
+  const url = `${base}/${slug}`;
 
-  const titleBits = [data.name || data.slug, [data.trade, data.city].filter(Boolean).join(' • ')].filter(Boolean);
-  const title = titleBits.join(' — ');
-  const description =
-    (data.about || '')
-      .trim()
-      .slice(0, 160) ||
-    `Contact ${data.name || data.slug}${data.city ? ` in ${data.city}` : ''}${data.trade ? ` for ${data.trade}` : ''}.`;
+  const title = data
+    ? `${data.name || data.slug} — ${[data.trade, data.city]
+        .filter(Boolean)
+        .join(' • ')}`
+    : 'TradePage — Your business in a link';
 
-  // Supabase avatar URLs are already absolute; fallback to default OG image
-  const image = data.avatar_url || '/og-default.png';
+  const description = data?.about?.trim()
+    ? data.about.trim().slice(0, 160)
+    : 'Your business in a link';
+
+  const image =
+    data?.avatar_path
+      ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${encodeURIComponent(
+          data.avatar_path
+        )}`
+      : `${base}/og-default.png`;
 
   return {
     title,
     description,
     openGraph: {
+      type: 'article',
+      url,
+      siteName: 'TradePage',
       title,
       description,
-      type: 'profile',
-      url: `/${data.slug}`,
-      siteName: 'TradePage',
-      images: [
-        {
-          url: image,
-          width: 800,
-          height: 800,
-          alt: title,
-        },
-      ],
+      images: [{ url: image }],
     },
     twitter: {
       card: 'summary_large_image',
@@ -57,7 +57,7 @@ export async function generateMetadata({ params }) {
   };
 }
 
-// This layout just renders the page content
 export default function ProfileLayout({ children }) {
+  // Just render the client page inside
   return children;
 }
