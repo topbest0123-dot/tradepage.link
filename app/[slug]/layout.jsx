@@ -1,63 +1,80 @@
 // app/[slug]/layout.jsx
+// NOTE: no "use client" here – this must be a server file.
+
 import { createClient } from '@supabase/supabase-js';
+
+function getServerSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  return createClient(url, key, { auth: { persistSession: false } });
+}
 
 export async function generateMetadata({ params }) {
   const { slug } = params;
+  const supabase = getServerSupabase();
+  const base =
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    { auth: { persistSession: false } }
-  );
-
-  const { data } = await supabase
+  // fetch profile
+  const { data: p } = await supabase
     .from('profiles')
-    .select('slug,name,trade,city,about,avatar_path')
+    .select('slug,name,trade,city,avatar_path')
     .ilike('slug', slug)
     .maybeSingle();
 
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link';
-  const url = `${base}/${slug}`;
+  // fallback if not found
+  if (!p) {
+    return {
+      title: 'TradePage — Your business in a link',
+      openGraph: {
+        type: 'website',
+        url: `${base}/${slug}`,
+        siteName: 'TradePage',
+        title: 'TradePage — Your business in a link',
+        description: 'Your business in a link',
+        images: [`${base}/og-default.png`],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: 'TradePage — Your business in a link',
+        description: 'Your business in a link',
+        images: [`${base}/og-default.png`],
+      },
+    };
+  }
 
-  const title = data
-    ? `${data.name || data.slug} — ${[data.trade, data.city]
-        .filter(Boolean)
-        .join(' • ')}`
-    : 'TradePage — Your business in a link';
+  const title = (p.name || p.slug).trim();
+  const subtitle = [p.trade, p.city].filter(Boolean).join(' • ') || 'Your business in a link';
 
-  const description = data?.about?.trim()
-    ? data.about.trim().slice(0, 160)
-    : 'Your business in a link';
-
-  const image =
-    data?.avatar_path
-      ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${encodeURIComponent(
-          data.avatar_path
-        )}`
-      : `${base}/og-default.png`;
+  // turn storage path into a public URL if present
+  let ogImage = `${base}/og-default.png`;
+  if (p.avatar_path) {
+    const { data } = getServerSupabase()
+      .storage.from('avatars')
+      .getPublicUrl(p.avatar_path);
+    if (data?.publicUrl) ogImage = data.publicUrl;
+  }
 
   return {
-    title,
-    description,
+    title: `${title} — ${subtitle}`,
     openGraph: {
-      type: 'article',
-      url,
+      type: 'profile',
+      url: `${base}/${p.slug}`,
       siteName: 'TradePage',
-      title,
-      description,
-      images: [{ url: image }],
+      title: `${title} — ${subtitle}`,
+      description: subtitle,
+      images: [ogImage],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
-      images: [image],
+      title: `${title} — ${subtitle}`,
+      description: subtitle,
+      images: [ogImage],
     },
   };
 }
 
+// Required wrapper for the route
 export default function ProfileLayout({ children }) {
-  // Just render the client page inside
-  return children;
+  return <>{children}</>;
 }
