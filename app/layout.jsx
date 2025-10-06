@@ -1,22 +1,31 @@
+// app/layout.jsx
 import AuthLinks from '@/components/AuthLinks';
 import './globals.css';
 
 export const metadata = {
-  title: 'TradePage',
-  description: 'Your business in a link',
-  // app/layout.jsx
-export const metadata = {
+  // lets you use relative URLs in openGraph/twitter
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || 'https://www.tradepage.link'
   ),
-  title: 'TradePage',
+  title: {
+    default: 'TradePage',
+    template: '%s — TradePage',
+  },
   description: 'Your business in a link',
   openGraph: {
-    title: 'TradePage',
-    description: 'Your business in a link',
-    url: '/',
+    type: 'website',
+    url: '/',                     // resolved against metadataBase
     siteName: 'TradePage',
-    images: ['/og-default.png'], // place a default image in /public
+    title: 'TradePage — Your business in a link',
+    description: 'Your business in a link',
+    images: [
+      {
+        url: '/og-default.png',   // ensure this file exists in /public
+        width: 1200,
+        height: 630,
+        alt: 'TradePage',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
@@ -58,9 +67,6 @@ export default function RootLayout({ children }) {
 
           <main style={{ paddingTop: 16 }}>{children}</main>
         </div>
-
-        {/* Keep header links white in every state (extra safety) */}
-     
       </body>
     </html>
   );
