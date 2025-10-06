@@ -11,6 +11,9 @@ const toList = (value) =>
     .split(/[,\n]+/)  // commas OR new lines
     .map((s) => s.trim())
     .filter(Boolean);
+// Build a public URL from a storage path in the 'avatars' bucket
+const publicUrlFor = (path) =>
+  path ? supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl : null;
 
 export default function PublicPage() {
   const { slug } = useParams();
@@ -21,7 +24,7 @@ export default function PublicPage() {
     const load = async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('slug,name,trade,city,phone,whatsapp,about,areas,services,prices,hours')
+        .select('slug,name,trade,city,phone,whatsapp,about,areas,services,prices,hours,avatar_path')
         .ilike('slug', slug)
         .maybeSingle();
 
@@ -49,6 +52,7 @@ export default function PublicPage() {
 
   const callHref = p?.phone ? `tel:${p.phone.replace(/\s+/g, '')}` : null;
   const waHref = p?.whatsapp ? `https://wa.me/${p.whatsapp.replace(/\D/g, '')}` : null;
+  const avatarUrl = publicUrlFor(p?.avatar_path);
 
   // --- Share handler (native share on mobile, clipboard fallback on desktop) ---
   const handleShare = () => {
@@ -73,7 +77,23 @@ export default function PublicPage() {
       {/* HEADER CARD */}
       <div style={headerCardStyle}>
         <div style={headerLeftStyle}>
-          <div style={logoDotStyle}>★</div>
+          {avatarUrl ? (
+  <img
+    src={avatarUrl}
+    alt={`${p.name || p.slug} logo`}
+    style={{
+      width: 48,
+      height: 48,
+      borderRadius: 14,
+      objectFit: 'cover',
+      border: '1px solid #183153',
+      background: '#0b1524',
+    }}
+  />
+) : (
+  <div style={logoDotStyle}>★</div>
+)}
+
           <div>
             <div style={headerNameStyle}>{p.name || p.slug}</div>
             <div style={headerSubStyle}>{[p.trade, p.city].filter(Boolean).join(' • ')}</div>
