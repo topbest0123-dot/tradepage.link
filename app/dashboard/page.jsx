@@ -206,7 +206,7 @@ export default function Dashboard() {
       )}
       {textarea('Opening hours', 'hours', 'e.g. Mon–Fri 8:00–18:00')}
 
-     {/* Actions: Save + Preview */}
+    {/* Actions: Save + Preview */}
 <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginTop: 8 }}>
   <button
     onClick={save}
@@ -227,8 +227,8 @@ export default function Dashboard() {
       href={`/${(form.slug || '')
         .trim()
         .toLowerCase()
-        .replace(/[^a-z0-9-]/g, '-')
-        .replace(/-+/g, '-')}`}
+        .replace(/[^a-z0-9-]/g, '-')      // keep only a–z,0–9, dash
+        .replace(/-+/g, '-')}`}            // collapse multiple dashes
       target="_blank"
       rel="noopener noreferrer"
       style={{
