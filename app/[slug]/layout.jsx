@@ -1,7 +1,7 @@
-// app/[slug]/layout.jsx (server component)
-import { createClient } from '@supabase/supabase-js';
+// app/[slug]/layout.jsx  (SERVER component)
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
+const supabase = createSupabaseClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
@@ -13,11 +13,11 @@ export async function generateMetadata({ params }) {
   // fetch public profile
   const { data: p } = await supabase
     .from('profiles')
-    .select('name,trade,city,avatar_path,slug')
+    .select('name,trade,city,about,avatar_path,slug')
     .ilike('slug', slug)
     .maybeSingle();
 
-  const url = `${base}/${slug}`;
+  const url = `${base}/${encodeURIComponent(slug)}`;
   const fallbackImage = `${base}/og-default.png`;
 
   if (!p) {
@@ -43,12 +43,15 @@ export async function generateMetadata({ params }) {
   }
 
   const title = p.name || slug;
-  const description = [p.trade, p.city].filter(Boolean).join(' • ') || 'TradePage';
+  const description =
+    [p.trade, p.city].filter(Boolean).join(' • ') || 'Your business in a link';
 
   // build public URL for avatar if present
   let imageUrl = fallbackImage;
   if (p.avatar_path) {
-    const { data } = supabase.storage.from('avatars').getPublicUrl(p.avatar_path);
+    const { data } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(p.avatar_path);
     if (data?.publicUrl) imageUrl = data.publicUrl;
   }
 
